@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+
+namespace EXE202_StudentManagement.Models;
+
+public partial class User : IdentityUser
+{
+
+    public string? FirstName { get; set; }
+	public string? LastName { get; set; }
+
+    public virtual ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
+
+    public virtual ICollection<ClassCourse> ClassCourses { get; set; } = new List<ClassCourse>();
+
+    public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
+
+    public virtual ICollection<GroupTask> GroupTasks { get; set; } = new List<GroupTask>();
+
+    public virtual ICollection<PeerReview> PeerReviewReviewees { get; set; } = new List<PeerReview>();
+
+    public virtual ICollection<PeerReview> PeerReviewReviewers { get; set; } = new List<PeerReview>();
+
+    public virtual ICollection<StudentClass> StudentClasses { get; set; } = new List<StudentClass>();
+
+    public virtual ICollection<StudentGroup> StudentGroups { get; set; } = new List<StudentGroup>();
+}
