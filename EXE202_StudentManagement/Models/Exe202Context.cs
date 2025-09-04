@@ -22,7 +22,6 @@ public partial class Exe202Context : IdentityDbContext<User>
 
     public virtual DbSet<Class> Classes { get; set; }
 
-    public virtual DbSet<ClassCourse> ClassCourses { get; set; }
 
     public virtual DbSet<Course> Courses { get; set; }
 
@@ -48,14 +47,14 @@ public partial class Exe202Context : IdentityDbContext<User>
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-		modelBuilder.Entity<Assignment>(entity =>
+        modelBuilder.Entity<Assignment>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Assignme__3213E83FF33EBC35");
 
             entity.ToTable("Assignment");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ClassCourseId).HasColumnName("class_course_id");
+            entity.Property(e => e.ClassId);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -71,8 +70,8 @@ public partial class Exe202Context : IdentityDbContext<User>
                 .HasMaxLength(255)
                 .HasColumnName("title");
 
-            entity.HasOne(d => d.ClassCourse).WithMany(p => p.Assignments)
-                .HasForeignKey(d => d.ClassCourseId)
+            entity.HasOne(d => d.Class).WithMany(p => p.Assignments)
+                .HasForeignKey(d => d.ClassId)
                 .HasConstraintName("FK__Assignmen__class__68487DD7");
         });
 
@@ -120,31 +119,39 @@ public partial class Exe202Context : IdentityDbContext<User>
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
-        });
 
-        modelBuilder.Entity<ClassCourse>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Class_Co__3213E83FF75B44F1");
+			entity.HasOne(d => d.Course).WithMany(p => p.Classes)
+				.HasForeignKey(d => d.CourseId)
+				.HasConstraintName("FK__Class_Cou__cours__5812160E");
 
-            entity.ToTable("Class_Course");
+			entity.HasOne(d => d.Teacher).WithMany(p => p.Classes)
+				.HasForeignKey(d => d.TeacherId)
+				.HasConstraintName("FK__Class_Cou__teach__59063A47");
+		});
 
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ClassId).HasColumnName("class_id");
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
-            entity.Property(e => e.TeacherId).HasColumnName("teacher_id");
+        //modelBuilder.Entity<ClassCourse>(entity =>
+        //{
+        //    entity.HasKey(e => e.Id).HasName("PK__Class_Co__3213E83FF75B44F1");
 
-            entity.HasOne(d => d.Class).WithMany(p => p.ClassCourses)
-                .HasForeignKey(d => d.ClassId)
-                .HasConstraintName("FK__Class_Cou__class__571DF1D5");
+        //    entity.ToTable("Class_Course");
 
-            entity.HasOne(d => d.Course).WithMany(p => p.ClassCourses)
-                .HasForeignKey(d => d.CourseId)
-                .HasConstraintName("FK__Class_Cou__cours__5812160E");
+        //    entity.Property(e => e.Id).HasColumnName("id");
+        //    entity.Property(e => e.ClassId).HasColumnName("class_id");
+        //    entity.Property(e => e.CourseId).HasColumnName("course_id");
+        //    entity.Property(e => e.TeacherId).HasColumnName("teacher_id");
 
-            entity.HasOne(d => d.Teacher).WithMany(p => p.ClassCourses)
-                .HasForeignKey(d => d.TeacherId)
-                .HasConstraintName("FK__Class_Cou__teach__59063A47");
-        });
+        //    entity.HasOne(d => d.Class).WithMany(p => p.ClassCourses)
+        //        .HasForeignKey(d => d.ClassId)
+        //        .HasConstraintName("FK__Class_Cou__class__571DF1D5");
+
+        //    entity.HasOne(d => d.Course).WithMany(p => p.ClassCourses)
+        //        .HasForeignKey(d => d.CourseId)
+        //        .HasConstraintName("FK__Class_Cou__cours__5812160E");
+
+        //    entity.HasOne(d => d.Teacher).WithMany(p => p.ClassCourses)
+        //        .HasForeignKey(d => d.TeacherId)
+        //        .HasConstraintName("FK__Class_Cou__teach__59063A47");
+        //});
 
         modelBuilder.Entity<Course>(entity =>
         {
@@ -175,13 +182,13 @@ public partial class Exe202Context : IdentityDbContext<User>
             entity.ToTable("Group");
 
             entity.Property(e => e.GroupId).HasColumnName("group_id");
-            entity.Property(e => e.ClassCourseId).HasColumnName("class_course_id");
+            entity.Property(e => e.ClassId).HasColumnName("class_id");
             entity.Property(e => e.GroupName)
                 .HasMaxLength(255)
                 .HasColumnName("group_name");
 
-            entity.HasOne(d => d.ClassCourse).WithMany(p => p.Groups)
-                .HasForeignKey(d => d.ClassCourseId)
+            entity.HasOne(d => d.Class).WithMany(p => p.Groups)
+                .HasForeignKey(d => d.ClassId)
                 .HasConstraintName("FK__Group__class_cou__5FB337D6");
         });
 
@@ -248,7 +255,7 @@ public partial class Exe202Context : IdentityDbContext<User>
             entity.ToTable("Notification");
 
             entity.Property(e => e.NotificationId).HasColumnName("notification_id");
-            entity.Property(e => e.ClassCourseId).HasColumnName("class_course_id");
+            entity.Property(e => e.ClassId).HasColumnName("class_course_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -258,8 +265,8 @@ public partial class Exe202Context : IdentityDbContext<User>
                 .HasMaxLength(255)
                 .HasColumnName("title");
 
-            entity.HasOne(d => d.ClassCourse).WithMany(p => p.Notifications)
-                .HasForeignKey(d => d.ClassCourseId)
+            entity.HasOne(d => d.Class).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.ClassId)
                 .HasConstraintName("FK__Notificat__class__02084FDA");
         });
 

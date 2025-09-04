@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EXE202_StudentManagement.Migrations
 {
     [DbContext(typeof(Exe202Context))]
-    [Migration("20250831144753_Init")]
+    [Migration("20250904152152_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -34,9 +34,8 @@ namespace EXE202_StudentManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ClassCourseId")
-                        .HasColumnType("int")
-                        .HasColumnName("class_course_id");
+                    b.Property<int?>("ClassId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -66,7 +65,7 @@ namespace EXE202_StudentManagement.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Assignme__3213E83FF33EBC35");
 
-                    b.HasIndex("ClassCourseId");
+                    b.HasIndex("ClassId");
 
                     b.ToTable("Assignment", (string)null);
                 });
@@ -126,10 +125,16 @@ namespace EXE202_StudentManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClassId"));
 
+                    b.Property<string>("ClassCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ClassName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("class_name");
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -137,43 +142,17 @@ namespace EXE202_StudentManagement.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<string>("TeacherId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("ClassId")
                         .HasName("PK__Class__FDF479862575CE96");
-
-                    b.ToTable("Class", (string)null);
-                });
-
-            modelBuilder.Entity("EXE202_StudentManagement.Models.ClassCourse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ClassId")
-                        .HasColumnType("int")
-                        .HasColumnName("class_id");
-
-                    b.Property<int?>("CourseId")
-                        .HasColumnType("int")
-                        .HasColumnName("course_id");
-
-                    b.Property<string>("TeacherId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("teacher_id");
-
-                    b.HasKey("Id")
-                        .HasName("PK__Class_Co__3213E83FF75B44F1");
-
-                    b.HasIndex("ClassId");
 
                     b.HasIndex("CourseId");
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Class_Course", (string)null);
+                    b.ToTable("Class", (string)null);
                 });
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.Course", b =>
@@ -222,9 +201,9 @@ namespace EXE202_StudentManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GroupId"));
 
-                    b.Property<int?>("ClassCourseId")
+                    b.Property<int?>("ClassId")
                         .HasColumnType("int")
-                        .HasColumnName("class_course_id");
+                        .HasColumnName("class_id");
 
                     b.Property<string>("GroupName")
                         .HasMaxLength(255)
@@ -234,7 +213,7 @@ namespace EXE202_StudentManagement.Migrations
                     b.HasKey("GroupId")
                         .HasName("PK__Group__D57795A04383A0C3");
 
-                    b.HasIndex("ClassCourseId");
+                    b.HasIndex("ClassId");
 
                     b.ToTable("Group", (string)null);
                 });
@@ -334,7 +313,7 @@ namespace EXE202_StudentManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
 
-                    b.Property<int?>("ClassCourseId")
+                    b.Property<int?>("ClassId")
                         .HasColumnType("int")
                         .HasColumnName("class_course_id");
 
@@ -356,7 +335,7 @@ namespace EXE202_StudentManagement.Migrations
                     b.HasKey("NotificationId")
                         .HasName("PK__Notifica__E059842FBC5861B6");
 
-                    b.HasIndex("ClassCourseId");
+                    b.HasIndex("ClassId");
 
                     b.ToTable("Notification", (string)null);
                 });
@@ -674,12 +653,12 @@ namespace EXE202_StudentManagement.Migrations
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.Assignment", b =>
                 {
-                    b.HasOne("EXE202_StudentManagement.Models.ClassCourse", "ClassCourse")
+                    b.HasOne("EXE202_StudentManagement.Models.Class", "Class")
                         .WithMany("Assignments")
-                        .HasForeignKey("ClassCourseId")
+                        .HasForeignKey("ClassId")
                         .HasConstraintName("FK__Assignmen__class__68487DD7");
 
-                    b.Navigation("ClassCourse");
+                    b.Navigation("Class");
                 });
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.AssignmentSubmission", b =>
@@ -699,24 +678,17 @@ namespace EXE202_StudentManagement.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("EXE202_StudentManagement.Models.ClassCourse", b =>
+            modelBuilder.Entity("EXE202_StudentManagement.Models.Class", b =>
                 {
-                    b.HasOne("EXE202_StudentManagement.Models.Class", "Class")
-                        .WithMany("ClassCourses")
-                        .HasForeignKey("ClassId")
-                        .HasConstraintName("FK__Class_Cou__class__571DF1D5");
-
                     b.HasOne("EXE202_StudentManagement.Models.Course", "Course")
-                        .WithMany("ClassCourses")
+                        .WithMany("Classes")
                         .HasForeignKey("CourseId")
                         .HasConstraintName("FK__Class_Cou__cours__5812160E");
 
                     b.HasOne("EXE202_StudentManagement.Models.User", "Teacher")
-                        .WithMany("ClassCourses")
+                        .WithMany("Classes")
                         .HasForeignKey("TeacherId")
                         .HasConstraintName("FK__Class_Cou__teach__59063A47");
-
-                    b.Navigation("Class");
 
                     b.Navigation("Course");
 
@@ -735,12 +707,12 @@ namespace EXE202_StudentManagement.Migrations
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.Group", b =>
                 {
-                    b.HasOne("EXE202_StudentManagement.Models.ClassCourse", "ClassCourse")
+                    b.HasOne("EXE202_StudentManagement.Models.Class", "Class")
                         .WithMany("Groups")
-                        .HasForeignKey("ClassCourseId")
+                        .HasForeignKey("ClassId")
                         .HasConstraintName("FK__Group__class_cou__5FB337D6");
 
-                    b.Navigation("ClassCourse");
+                    b.Navigation("Class");
                 });
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.GroupTask", b =>
@@ -779,12 +751,12 @@ namespace EXE202_StudentManagement.Migrations
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.Notification", b =>
                 {
-                    b.HasOne("EXE202_StudentManagement.Models.ClassCourse", "ClassCourse")
+                    b.HasOne("EXE202_StudentManagement.Models.Class", "Class")
                         .WithMany("Notifications")
-                        .HasForeignKey("ClassCourseId")
+                        .HasForeignKey("ClassId")
                         .HasConstraintName("FK__Notificat__class__02084FDA");
 
-                    b.Navigation("ClassCourse");
+                    b.Navigation("Class");
                 });
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.PeerReview", b =>
@@ -916,23 +888,18 @@ namespace EXE202_StudentManagement.Migrations
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.Class", b =>
                 {
-                    b.Navigation("ClassCourses");
-
-                    b.Navigation("StudentClasses");
-                });
-
-            modelBuilder.Entity("EXE202_StudentManagement.Models.ClassCourse", b =>
-                {
                     b.Navigation("Assignments");
 
                     b.Navigation("Groups");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("StudentClasses");
                 });
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.Course", b =>
                 {
-                    b.Navigation("ClassCourses");
+                    b.Navigation("Classes");
                 });
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.Group", b =>
@@ -948,7 +915,7 @@ namespace EXE202_StudentManagement.Migrations
                 {
                     b.Navigation("AssignmentSubmissions");
 
-                    b.Navigation("ClassCourses");
+                    b.Navigation("Classes");
 
                     b.Navigation("Courses");
 

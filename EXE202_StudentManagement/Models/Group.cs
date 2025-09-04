@@ -7,11 +7,11 @@ public partial class Group
 {
     public int GroupId { get; set; }
 
-    public int? ClassCourseId { get; set; }
+    public int? ClassId { get; set; }
 
     public string? GroupName { get; set; }
 
-    public virtual ClassCourse? ClassCourse { get; set; }
+    public virtual Class? Class { get; set; }
 
     public virtual ICollection<GroupTask> GroupTasks { get; set; } = new List<GroupTask>();
 

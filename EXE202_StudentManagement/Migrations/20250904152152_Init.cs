@@ -53,20 +53,6 @@ namespace EXE202_StudentManagement.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Class",
-                columns: table => new
-                {
-                    class_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    class_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Class__FDF479862575CE96", x => x.class_id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -194,6 +180,96 @@ namespace EXE202_StudentManagement.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Class",
+                columns: table => new
+                {
+                    class_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    class_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ClassCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    CourseId = table.Column<int>(type: "int", nullable: true),
+                    TeacherId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Class__FDF479862575CE96", x => x.class_id);
+                    table.ForeignKey(
+                        name: "FK__Class_Cou__cours__5812160E",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK__Class_Cou__teach__59063A47",
+                        column: x => x.TeacherId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Assignment",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClassId = table.Column<int>(type: "int", nullable: true),
+                    title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    deadline = table.Column<DateTime>(type: "datetime", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    isGroupAssignment = table.Column<bool>(type: "bit", nullable: true, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Assignme__3213E83FF33EBC35", x => x.id);
+                    table.ForeignKey(
+                        name: "FK__Assignmen__class__68487DD7",
+                        column: x => x.ClassId,
+                        principalTable: "Class",
+                        principalColumn: "class_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Group",
+                columns: table => new
+                {
+                    group_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    class_id = table.Column<int>(type: "int", nullable: true),
+                    group_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Group__D57795A04383A0C3", x => x.group_id);
+                    table.ForeignKey(
+                        name: "FK__Group__class_cou__5FB337D6",
+                        column: x => x.class_id,
+                        principalTable: "Class",
+                        principalColumn: "class_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notification",
+                columns: table => new
+                {
+                    notification_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    class_course_id = table.Column<int>(type: "int", nullable: true),
+                    title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Notifica__E059842FBC5861B6", x => x.notification_id);
+                    table.ForeignKey(
+                        name: "FK__Notificat__class__02084FDA",
+                        column: x => x.class_course_id,
+                        principalTable: "Class",
+                        principalColumn: "class_id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Student_Class",
                 columns: table => new
                 {
@@ -215,99 +291,6 @@ namespace EXE202_StudentManagement.Migrations
                         column: x => x.student_id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Class_Course",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    class_id = table.Column<int>(type: "int", nullable: true),
-                    course_id = table.Column<int>(type: "int", nullable: true),
-                    teacher_id = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Class_Co__3213E83FF75B44F1", x => x.id);
-                    table.ForeignKey(
-                        name: "FK__Class_Cou__class__571DF1D5",
-                        column: x => x.class_id,
-                        principalTable: "Class",
-                        principalColumn: "class_id");
-                    table.ForeignKey(
-                        name: "FK__Class_Cou__cours__5812160E",
-                        column: x => x.course_id,
-                        principalTable: "Course",
-                        principalColumn: "id");
-                    table.ForeignKey(
-                        name: "FK__Class_Cou__teach__59063A47",
-                        column: x => x.teacher_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Assignment",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    class_course_id = table.Column<int>(type: "int", nullable: true),
-                    title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    deadline = table.Column<DateTime>(type: "datetime", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    isGroupAssignment = table.Column<bool>(type: "bit", nullable: true, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Assignme__3213E83FF33EBC35", x => x.id);
-                    table.ForeignKey(
-                        name: "FK__Assignmen__class__68487DD7",
-                        column: x => x.class_course_id,
-                        principalTable: "Class_Course",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Group",
-                columns: table => new
-                {
-                    group_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    class_course_id = table.Column<int>(type: "int", nullable: true),
-                    group_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Group__D57795A04383A0C3", x => x.group_id);
-                    table.ForeignKey(
-                        name: "FK__Group__class_cou__5FB337D6",
-                        column: x => x.class_course_id,
-                        principalTable: "Class_Course",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Notification",
-                columns: table => new
-                {
-                    notification_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    class_course_id = table.Column<int>(type: "int", nullable: true),
-                    title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    message = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Notifica__E059842FBC5861B6", x => x.notification_id);
-                    table.ForeignKey(
-                        name: "FK__Notificat__class__02084FDA",
-                        column: x => x.class_course_id,
-                        principalTable: "Class_Course",
-                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -495,9 +478,9 @@ namespace EXE202_StudentManagement.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Assignment_class_course_id",
+                name: "IX_Assignment_ClassId",
                 table: "Assignment",
-                column: "class_course_id");
+                column: "ClassId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Assignment_Submission_assignment_id",
@@ -510,19 +493,14 @@ namespace EXE202_StudentManagement.Migrations
                 column: "student_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Class_Course_class_id",
-                table: "Class_Course",
-                column: "class_id");
+                name: "IX_Class_CourseId",
+                table: "Class",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Class_Course_course_id",
-                table: "Class_Course",
-                column: "course_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Class_Course_teacher_id",
-                table: "Class_Course",
-                column: "teacher_id");
+                name: "IX_Class_TeacherId",
+                table: "Class",
+                column: "TeacherId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Course_create_by",
@@ -530,9 +508,9 @@ namespace EXE202_StudentManagement.Migrations
                 column: "create_by");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Group_class_course_id",
+                name: "IX_Group_class_id",
                 table: "Group",
-                column: "class_course_id");
+                column: "class_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Group_Task_assigned_to",
@@ -647,9 +625,6 @@ namespace EXE202_StudentManagement.Migrations
 
             migrationBuilder.DropTable(
                 name: "Group");
-
-            migrationBuilder.DropTable(
-                name: "Class_Course");
 
             migrationBuilder.DropTable(
                 name: "Class");

@@ -7,7 +7,7 @@ public partial class Assignment
 {
     public int Id { get; set; }
 
-    public int? ClassCourseId { get; set; }
+    public int? ClassId { get; set; }
 
     public string? Title { get; set; }
 
@@ -21,7 +21,7 @@ public partial class Assignment
 
     public virtual ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
 
-    public virtual ClassCourse? ClassCourse { get; set; }
+    public virtual Class? Class { get; set; }
 
     public virtual ICollection<GroupTask> GroupTasks { get; set; } = new List<GroupTask>();
 

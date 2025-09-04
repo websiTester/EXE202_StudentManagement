@@ -12,7 +12,7 @@ public partial class User : IdentityUser
 
     public virtual ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
 
-    public virtual ICollection<ClassCourse> ClassCourses { get; set; } = new List<ClassCourse>();
+    public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
 
     public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
 

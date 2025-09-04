@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 
@@ -27,6 +27,9 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 }).AddEntityFrameworkStores<Exe202Context>()
 			.AddDefaultTokenProviders();
 
+var app = builder.Build();
+
+
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -34,7 +37,7 @@ app.UseSession();
 
 app.MapControllerRoute(
 				name: "default",
-				pattern: "{controller}/{action}"
+				pattern: "{controller=class}/{action=index}"
 );
 
 app.Run();
