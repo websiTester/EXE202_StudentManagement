@@ -12,6 +12,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+builder.Services.AddScoped<IGroupRepository, GroupRepostiory>();
+builder.Services.AddScoped<IGroupService, GroupService>();
 builder.Services.AddDbContext<Exe202Context>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn"));

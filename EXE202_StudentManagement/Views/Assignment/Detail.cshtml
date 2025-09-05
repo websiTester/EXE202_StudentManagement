@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Chi tiết Bài tập";
+    var myGroup= ViewBag.MyGroup as EXE202_StudentManagement.Models.Group;
 }
 
 <!DOCTYPE html>
@@ -165,7 +166,7 @@
                         <div id="remark-list" class="space-y-4">
                             @if (Model.Class?.Groups != null)
                             {
-                                var myGroup = Model.Class.Groups.FirstOrDefault();
+                                
                                 if (myGroup?.StudentGroups != null)
                                 {
                                     foreach (var member in myGroup.StudentGroups)
@@ -211,7 +212,6 @@
                         <option value="" disabled selected>-- Chọn thành viên --</option>
                         @if (Model.IsGroupAssignment == true)
                         {
-                            var myGroup = Model.Class?.Groups?.FirstOrDefault();
                             if (myGroup?.StudentGroups != null)
                             {
                                 foreach (var member in myGroup.StudentGroups)
