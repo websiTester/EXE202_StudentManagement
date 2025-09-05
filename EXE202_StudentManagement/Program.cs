@@ -1,4 +1,8 @@
 using EXE202_StudentManagement.Models;
+using EXE202_StudentManagement.Repositories.Class;
+using EXE202_StudentManagement.Repositories.Interface;
+using EXE202_StudentManagement.Services.Class;
+using EXE202_StudentManagement.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
-
+builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+builder.Services.AddScoped<IAssignmentService, AssignmentService>();
 builder.Services.AddDbContext<Exe202Context>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn"));

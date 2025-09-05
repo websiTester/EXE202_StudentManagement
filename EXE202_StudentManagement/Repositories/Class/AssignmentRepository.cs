@@ -15,16 +15,20 @@ namespace EXE202_StudentManagement.Repositories.Class
         public Assignment GetAssignmentById(int id)
         {
 
-            return _context.Assignments
-                               .Include(a => a.Class)
-                                   .ThenInclude(c => c.Teacher) // Lấy thông tin giáo viên
-                               .Include(a => a.GroupTasks)
-                                   .ThenInclude(t => t.AssignedToNavigation) // Bao gồm thông tin người được giao
-                               .Include(a => a.GroupTasks)
-                                   .ThenInclude(t => t.Group) // Bao gồm thông tin nhóm
-                               .Include(a => a.Materials)
-                               .Include(a => a.AssignmentSubmissions)
-                               .FirstOrDefault(a => a.Id == id);
+            var assignment = _context.Assignments
+          .Include(a => a.Class)
+              .ThenInclude(c => c.Teacher) // Tải thông tin giáo viên
+          .Include(a => a.Class)
+              .ThenInclude(c => c.Groups) // Tải danh sách nhóm của lớp
+                  .ThenInclude(g => g.StudentGroups) // Tải danh sách thành viên trong mỗi nhóm
+                      .ThenInclude(sg => sg.Student) // Tải thông tin chi tiết của mỗi thành viên
+          .Include(a => a.GroupTasks)
+              .ThenInclude(t => t.Group) // Tải thông tin nhóm cho từng task
+          .Include(a => a.Materials)
+          .Include(a => a.AssignmentSubmissions)
+          .FirstOrDefault(a => a.Id == id);
+
+            return assignment;
 
         }
     }
