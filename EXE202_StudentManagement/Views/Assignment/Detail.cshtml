@@ -1,0 +1,530 @@
+﻿@model EXE202_StudentManagement.Models.Assignment
+
+@{
+    ViewData["Title"] = "Chi tiết Bài tập";
+    var myGroup= ViewBag.MyGroup as EXE202_StudentManagement.Models.Group;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Bài tập - Viroom.com</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+                body {
+                        font-family: 'Inter', sans-serif;
+                        background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
+                        min-height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+
+        }
+
+                .kanban-col {
+                        min-height: 200px;
+
+        }
+
+                .kanban-item {
+                        cursor: grab;
+
+        }
+
+                .modal {
+                        transition: all 0.3s ease-in-out;
+
+        }
+
+                    .modal.hidden {
+                            opacity: 0;
+                            pointer-events: none;
+
+        }
+
+                .star-rating i {
+                        transition: color 0.2s ease-in-out;
+
+        }
+
+
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-white bg-opacity-80 shadow-sm sticky top-0 z-50 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-users-class text-2xl text-indigo-500"></i>
+                <h1 class="text-2xl font-bold text-gray-800">Viroom</h1>
+            </div>
+            <nav class="flex items-center space-x-6">
+                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Trang chủ</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Thông báo</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Hồ sơ</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-700 font-medium">Xin chào, Nguyễn Văn A</span>
+                <i class="fas fa-user-circle text-3xl text-gray-500"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-10">
+            <div class="mb-8 pb-4 border-b border-gray-200">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Bài tập: @Model.Title</h2>
+                <p class="text-gray-600 mb-2">Giáo viên: @Model.Class?.Teacher?.FirstName @Model.Class?.Teacher?.LastName</p>
+                <p class="text-gray-600">
+                    <i class="fas fa-calendar-alt mr-2 text-indigo-500"></i>
+                    <span class="font-medium">Hạn chót: </span> @Model.Deadline?.ToString("dd/MM/yyyy")
+                </p>
+                <div class="mt-4 prose max-w-none text-gray-700">
+                    <p>@Model.Description</p>
+                </div>
+            </div>
+
+            @if (Model.IsGroupAssignment == true)
+            {
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-tasks mr-2 text-indigo-500"></i>
+                            Tiến độ Nhóm
+                        </div>
+                        <button id="create-task-btn" onclick="showCreateTaskModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold py-2 px-4 rounded-lg transition duration-200">
+                            <i class="fas fa-plus mr-1"></i> Tạo công việc
+                        </button>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Cần làm</h4>
+                            <div id="todo" class="space-y-3">
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Đang làm</h4>
+                            <div id="doing" class="space-y-3">
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Hoàn thành</h4>
+                            <div id="done" class="space-y-3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center mt-8">
+                        <div class="w-full md:w-1/2 lg:w-1/3">
+                            <canvas id="progress-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-cloud-upload-alt mr-2 text-indigo-500"></i>
+                        Nộp bài
+                    </h3>
+                    <form onsubmit="handleSubmitAssignment(event)">
+                        <div class="mb-4">
+                            <label for="submit-method" class="block text-gray-700 font-semibold mb-2">Chọn phương thức nộp bài</label>
+                            <select id="submit-method" name="submit-method" onchange="toggleSubmissionMethod()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="link">Nộp bằng link</option>
+                                <option value="file">Tải file lên</option>
+                            </select>
+                        </div>
+                        <div id="link-submission-field">
+                            <label for="submit-link" class="block text-gray-700 font-semibold mb-2">Link nộp bài (Google Drive, Github,...)</label>
+                            <input type="url" id="submit-link" name="submit-link" placeholder="Nhập đường dẫn..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        </div>
+                        <div id="file-submission-field" class="hidden">
+                            <label for="submit-file" class="block text-gray-700 font-semibold mb-2">Tải file lên</label>
+                            <input type="file" id="submit-file" name="submit-file" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <button type="submit" class="w-full mt-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition duration-200">
+                            Nộp bài
+                        </button>
+                    </form>
+                </div>
+
+                @if (Model.IsGroupAssignment == true)
+                {
+                    <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-star mr-2 text-indigo-500"></i>
+                            Đánh giá thành viên
+                        </h3>
+                        <div id="remark-list" class="space-y-4">
+                            @if (Model.Class?.Groups != null)
+                            {
+                                
+                                if (myGroup?.StudentGroups != null)
+                                {
+                                    foreach (var member in myGroup.StudentGroups)
+                                    {
+                                        <div class="border border-gray-200 p-4 rounded-lg shadow-sm">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-gray-700">@member.Student?.FirstName @member.Student?.LastName</span>
+                                                <div class="star-rating flex items-center space-x-1 text-2xl text-gray-400" data-member-id="@member.Student?.Id">
+                                                    <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="1"></i>
+                                                    <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="2"></i>
+                                                    <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="3"></i>
+                                                    <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="4"></i>
+                                                    <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="5"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+
+    <div id="create-task-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Tạo công việc mới</h3>
+                <button onclick="closeCreateTaskModal()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="handleCreateTask(event)">
+                <div class="mb-4">
+                    <label for="task-name" class="block text-gray-700 font-semibold mb-2">Tên công việc</label>
+                    <input type="text" id="task-name" name="task-name" placeholder="Ví dụ: Thiết kế giao diện" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="task-assignee" class="block text-gray-700 font-semibold mb-2">Phân công cho</label>
+                    <select id="task-assignee" name="task-assignee" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="" disabled selected>-- Chọn thành viên --</option>
+                        @if (Model.IsGroupAssignment == true)
+                        {
+                            if (myGroup?.StudentGroups != null)
+                            {
+                                foreach (var member in myGroup.StudentGroups)
+                                {
+                                    <option value="@member.Student?.Id">@member.Student?.FirstName @member.Student?.LastName</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition duration-200">
+                    Tạo
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-white bg-opacity-80 text-gray-800 py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Viroom.com. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Lấy dữ liệu công việc và thành viên từ server
+        const tasksData = @Html.Raw(Json.Serialize(Model.GroupTasks.Select(t => new
+            {
+                taskId = t.TaskId,
+                title = t.Title,
+                status = t.Status,
+                assignedTo = t.AssignedTo,
+                assignedToName = (t.AssignedToNavigation?.FirstName + " " + t.AssignedToNavigation?.LastName)?.Trim()
+            })));
+
+        const members = @Html.Raw(Json.Serialize(Model.Class?.Groups?.FirstOrDefault()?.StudentGroups?.Select(sg => new
+            {
+                id = sg.Student?.Id,
+                name = (sg.Student?.FirstName + " " + sg.Student?.LastName)?.Trim()
+            })));
+
+        let progressChart = null; // Khai báo biến biểu đồ ở global scope
+
+        // Function để cập nhật Kanban Board
+        function updateKanbanBoard() {
+            const todoContainer = document.getElementById('todo');
+            const doingContainer = document.getElementById('doing');
+            const doneContainer = document.getElementById('done');
+
+            // Xóa nội dung cũ
+            todoContainer.innerHTML = '';
+            doingContainer.innerHTML = '';
+            doneContainer.innerHTML = '';
+
+            tasksData.forEach(task => {
+                const assigneeName = task.assignedToName || 'Chưa phân công';
+
+                const taskElement = document.createElement('div');
+                taskElement.className = `kanban-item bg-white p-3 rounded-lg shadow-md border-l-4 ${getBorderColor(task.status)}`;
+                taskElement.setAttribute('draggable', 'true');
+                taskElement.setAttribute('ondragstart', 'drag(event)');
+                taskElement.id = `task-${task.taskId}`;
+                taskElement.innerHTML = `
+                        <p class="font-medium text-gray-700">${task.title}</p>
+                        <p class="text-sm text-gray-500 mt-1">Người phụ trách: ${assigneeName}</p>
+                    `;
+
+                const status = task.status?.trim().toLowerCase();
+
+                if (status === 'to do') {
+                    todoContainer.appendChild(taskElement);
+                } else if (status === 'doing') {
+                    doingContainer.appendChild(taskElement);
+                } else if (status === 'done') {
+                    doneContainer.appendChild(taskElement);
+                }
+            });
+        }
+
+        function getBorderColor(status) {
+            const lowerStatus = status?.trim().toLowerCase();
+            if (lowerStatus === 'to do') return 'border-red-500';
+            if (lowerStatus === 'doing') return 'border-blue-500';
+            if (lowerStatus === 'done') return 'border-green-500';
+            return 'border-gray-500';
+        }
+
+        // Cập nhật biểu đồ
+        function updateChart() {
+            const todoCount = tasksData.filter(t => t.status?.trim().toLowerCase() === 'to do').length;
+            const doingCount = tasksData.filter(t => t.status?.trim().toLowerCase() === 'doing').length;
+            const doneCount = tasksData.filter(t => t.status?.trim().toLowerCase() === 'done').length;
+
+            const chartData = [todoCount, doingCount, doneCount];
+
+            if (progressChart) {
+                progressChart.data.datasets[0].data = chartData;
+                progressChart.update();
+            } else {
+                const ctx = document.getElementById('progress-chart').getContext('2d');
+                progressChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Cần làm', 'Đang làm', 'Hoàn thành'],
+                        datasets: [{
+                            data: chartData,
+                            backgroundColor: ['#ef4444', '#3b82f6', '#22c55e'],
+                            borderColor: ['#f8fafc', '#f8fafc', '#f8fafc'],
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { usePointStyle: true, font: { size: 14, weight: 'bold' } }
+                            },
+                            tooltip: { enabled: true },
+                        },
+                    }
+                });
+            }
+        }
+
+
+        // Cập nhật biểu đồ và Kanban Board khi tải trang
+        document.addEventListener('DOMContentLoaded', () => {
+            if (@Model.IsGroupAssignment.ToString().ToLower()) {
+                updateKanbanBoard();
+                updateChart();
+            }
+
+            const remarkList = document.getElementById('remark-list');
+            if (members && remarkList) {
+                members.forEach(member => {
+                    const remarkItem = document.createElement('div');
+                    remarkItem.className = 'border border-gray-200 p-4 rounded-lg shadow-sm';
+                    remarkItem.innerHTML = `
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium text-gray-700">${member.name}</span>
+                                    <div class="star-rating flex items-center space-x-1 text-2xl text-gray-400" data-member-id="${member.id}">
+                                        <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="1"></i>
+                                        <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="2"></i>
+                                        <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="3"></i>
+                                        <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="4"></i>
+                                        <i class="fas fa-star cursor-pointer hover:text-yellow-400" data-value="5"></i>
+                                    </div>
+                                </div>
+                            `;
+                    remarkList.appendChild(remarkItem);
+                });
+
+                remarkList.querySelectorAll('.star-rating').forEach(starContainer => {
+                    starContainer.addEventListener('click', function (e) {
+                        const star = e.target.closest('i');
+                        if (star) {
+                            const memberId = this.getAttribute('data-member-id');
+                            const value = parseInt(star.getAttribute('data-value'));
+
+                            handleRating(memberId, value);
+
+                            const stars = this.querySelectorAll('i');
+                            stars.forEach(s => {
+                                if (parseInt(s.getAttribute('data-value')) <= value) {
+                                    s.classList.remove('text-gray-400');
+                                    s.classList.add('text-yellow-400');
+                                } else {
+                                    s.classList.remove('text-yellow-400');
+                                    s.classList.add('text-gray-400');
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
+        // Drag and Drop functionality for Kanban board
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            const targetContainer = event.target.closest('.kanban-col').querySelector('div[id]');
+            if (targetContainer && draggedElement) { // Đã thêm kiểm tra này
+                targetContainer.appendChild(draggedElement);
+                let newStatus;
+                if (targetContainer.id === 'doing') {
+                    draggedElement.className = draggedElement.className.replace(/border-red-500|border-green-500/g, 'border-blue-500');
+                    newStatus = 'Doing';
+                } else if (targetContainer.id === 'done') {
+                    draggedElement.className = draggedElement.className.replace(/border-red-500|border-blue-500/g, 'border-green-500');
+                    newStatus = 'Done';
+                } else if (targetContainer.id === 'todo') {
+                    draggedElement.className = draggedElement.className.replace(/border-blue-500|border-green-500/g, 'border-red-500');
+                    newStatus = 'To Do';
+                }
+
+                const taskId = parseInt(draggedElement.id.split('-')[1]);
+                const taskToUpdate = tasksData.find(t => t.taskId === taskId);
+                if (taskToUpdate) {
+                    taskToUpdate.status = newStatus;
+                }
+
+
+                updateChart(); // Update chart after drop
+            }
+        }
+
+        // Handle form submissions
+        function handleSubmitAssignment(event) {
+            event.preventDefault();
+            const method = document.getElementById('submit-method').value;
+            if (method === 'link') {
+                const submitLink = document.getElementById("submit-link").value;
+                if (submitLink) {
+                    alert("Nộp bài thành công!", "success");
+                } else {
+                    alert("Vui lòng nhập link nộp bài.", "error");
+                }
+            } else if (method === 'file') {
+                const submitFile = document.getElementById("submit-file").files[0];
+                if (submitFile) {
+                    alert("Nộp file thành công!", "success");
+                } else {
+                    alert("Vui lòng chọn file để nộp.", "error");
+                }
+            }
+        }
+
+        function handleCreateTask(event) {
+            event.preventDefault();
+            const taskName = document.getElementById('task-name').value;
+            const assigneeId = document.getElementById('task-assignee').value;
+            const assigneeName = document.getElementById('task-assignee').options[document.getElementById('task-assignee').selectedIndex].text;
+
+            if (taskName && assigneeId) {
+                const newTaskId = Date.now();
+                const newTask = {
+                    taskId: newTaskId,
+                    title: taskName,
+                    status: 'To Do',
+                    assignedTo: assigneeId,
+                    assignedToName: assigneeName
+                };
+                tasksData.push(newTask);
+                updateKanbanBoard();
+                alert("Đã tạo công việc mới!", "success");
+                closeCreateTaskModal();
+                updateChart();
+            } else {
+                alert("Vui lòng nhập đầy đủ thông tin.", "error");
+            }
+        }
+
+        // Custom alert function
+        function alert(message, type = "info") {
+            const alertBox = document.createElement('div');
+            let iconClass = '';
+            let colorClass = '';
+            if (type === "success") {
+                iconClass = 'fa-check-circle';
+                colorClass = 'text-green-500';
+            } else if (type === "error") {
+                iconClass = 'fa-exclamation-triangle';
+                colorClass = 'text-red-500';
+            } else {
+                iconClass = 'fa-info-circle';
+                colorClass = 'text-blue-500';
+            }
+
+            alertBox.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 text-center z-50 max-w-sm w-full';
+            alertBox.style.cssText = 'animation: fadeIn 0.3s ease-in-out;';
+
+            alertBox.innerHTML = `
+                        <div class="flex flex-col items-center">
+                            <div class="${colorClass} text-4xl mb-4">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+                            <button onclick="this.parentElement.remove()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">Đóng</button>
+                        </div>
+                    `;
+            document.body.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.style.cssText = 'animation: fadeOut 0.3s ease-in-out;';
+                setTimeout(() => alertBox.remove(), 300);
+            }, 3000);
+        }
+        console.log(tasksData);
+        console.log("IsGroupAssignment =", @Model.IsGroupAssignment.ToString().ToLower());
+
+        function showCreateTaskModal() {
+            document.getElementById('create-task-modal').classList.remove('hidden');
+        }
+
+        // Thêm hàm closeCreateTaskModal() để ẩn pop-up
+        function closeCreateTaskModal() {
+            document.getElementById('create-task-modal').classList.add('hidden');
+        }
+
+
+
+    </script>
+</body>
+</html>

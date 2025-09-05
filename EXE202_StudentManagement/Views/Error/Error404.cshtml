@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lỗi 404 - Không tìm thấy trang này  </title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS (chỉ để dùng button và grid) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #fbecec; /* Màu nền đỏ rất nhạt */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .error-container {
+            text-align: center;
+            color: #5c2121; /* Màu chữ đỏ sẫm */
+            padding: 2rem;
+        }
+
+        .error-code {
+            font-size: 10rem;
+            font-weight: 900;
+            line-height: 1;
+            color: #dc3545; /* Màu đỏ của Bootstrap */
+            text-shadow: 4px 4px 0 #fff, 6px 6px 0 #f5c6cb;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .error-heading {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            color: #721c24;
+        }
+
+        .error-reason {
+            background-color: #fff;
+            border: 1px solid #f5c6cb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 2.5rem;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+            .error-reason h5 {
+                color: #721c24;
+                font-weight: 700;
+                border-bottom: 2px solid #f5c6cb;
+                padding-bottom: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+        .btn-custom-red {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+            .btn-custom-red:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+                transform: translateY(-3px);
+                box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+            }
+
+        /* SỬA LỖI: Thêm @@ để Razor không hiểu nhầm là mã C# */
+        @@keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="error-container">
+        <div>
+            <div class="error-code">404</div>
+            <h1 class="error-heading">Rất tiếc, trang bạn tìm kiếm không tồn tại!</h1>
+            <p class="error-message">Có vẻ như bạn đã đi lạc. Đừng lo, chúng tôi sẽ giúp bạn tìm đường về.</p>
+
+            <!-- Nút quay lại trang trước -->
+            <button onclick="history.back()" class="btn btn-custom-red">
+                Quay lại trang trước
+            </button>
+
+            <!-- Phần giải thích nguyên nhân lỗi -->
+            <div class="error-reason">
+                <h5>Nguyên nhân có thể xảy ra:</h5>
+                <ul>
+                    <li>Đường dẫn URL bạn nhập đã bị sai.</li>
+                    <li>Trang bạn đang tìm kiếm đã bị xóa hoặc di chuyển đến một địa chỉ khác.</li>
+                    <li>Liên kết bạn nhấp vào đã cũ hoặc không còn hợp lệ.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
