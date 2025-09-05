@@ -22,7 +22,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 	options.Password.RequireNonAlphanumeric = false;
 	options.Password.RequireUppercase = false;
 
-	options.SignIn.RequireConfirmedEmail = true;
 
 }).AddEntityFrameworkStores<Exe202Context>()
 			.AddDefaultTokenProviders();
