@@ -9,9 +9,8 @@ public partial class User : IdentityUser
 
     public string? FirstName { get; set; }
 	public string? LastName { get; set; }
-    public int AccountStatus { get; set; }
 
-	public virtual ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
+    public virtual ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
 
     public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
 
