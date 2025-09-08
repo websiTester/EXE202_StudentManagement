@@ -1,2 +1,197 @@
-﻿
-<h1>Hello Bro 1</h1>
+﻿@model IEnumerable<EXE202_StudentManagement.Models.StudentClass>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lớp học của tôi - Viroom.com</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal {
+            transition: all 0.3s ease-in-out;
+        }
+        .modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white bg-opacity-80 shadow-sm sticky top-0 z-50 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-users-class text-2xl text-indigo-500"></i>
+                <h1 class="text-2xl font-bold text-gray-800">Viroom</h1>
+            </div>
+            <nav class="flex items-center space-x-6">
+                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Trang chủ</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Thông báo</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Hồ sơ</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-700 font-medium">Xin chào, Nguyễn Văn A</span>
+                <i class="fas fa-user-circle text-3xl text-gray-500"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Lớp học của tôi</h2>
+            <button onclick="showJoinClassModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                <i class="fas fa-plus-circle mr-2"></i>Tham gia lớp học
+            </button>
+        </div>
+
+        <!-- Class List Grid -->
+        <div id="class-list-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var studentClass in Model)
+                {
+                    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">@studentClass.Class.ClassName</h3>
+                                <p class="text-sm text-gray-600">Khóa học: @studentClass.Class.Course.Name</p>
+                            </div>
+                            <i class="fas fa-chalkboard-teacher text-4xl text-indigo-500 ml-4"></i>
+                        </div>
+                        <div class="border-t border-gray-200 mt-4 pt-4 text-right">
+                            <p class="text-sm text-gray-600 mb-2">Giáo viên: @studentClass.Class.Teacher?.FirstName @studentClass.Class.Teacher?.LastName</p>
+                            <a href="/class/detail/@studentClass.Class.ClassId" class="inline-flex items-center text-sm font-medium text-indigo-500 hover:text-indigo-700 transition-colors duration-200">
+                                Chi tiết <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-span-full text-center text-gray-500 mt-8">
+                    <p class="text-lg">Bạn chưa tham gia lớp học nào.</p>
+                    <p>Hãy tham gia một lớp học bằng cách nhấp vào nút trên.</p>
+                </div>
+            }
+        </div>
+    </main>
+
+    <!-- Modal for Joining Class -->
+    <div id="join-class-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Tham gia lớp học</h3>
+                <button onclick="closeJoinClassModal()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="join-class-form" onsubmit="handleJoinClass(event)">
+                <div class="mb-4">
+                    <label for="class-code" class="block text-gray-700 font-semibold mb-2">Mã lớp</label>
+                    <input type="text" id="class-code" name="class-code" placeholder="Nhập mã lớp..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition duration-200">
+                    Tham gia
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white bg-opacity-80 text-gray-800 py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Viroom.com. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script>
+        function showJoinClassModal() {
+            document.getElementById('join-class-modal').classList.remove('hidden');
+        }
+
+        function closeJoinClassModal() {
+            document.getElementById('join-class-modal').classList.add('hidden');
+        }
+
+        function handleJoinClass(event) {
+            event.preventDefault();
+            const classCode = document.getElementById('class-code').value;
+
+            if (classCode) {
+                fetch('/api/Class/Join', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ classCode: classCode }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message, "success");
+                        window.location.reload();
+                    } else {
+                        alert(data.message, "error");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Đã xảy ra lỗi khi tham gia lớp học.", "error");
+                });
+            } else {
+                alert("Vui lòng nhập mã lớp.", "error");
+            }
+        }
+
+        function alert(message, type = "info") {
+            const alertBox = document.createElement('div');
+            let iconClass = '';
+            let colorClass = '';
+            if (type === "success") {
+                iconClass = 'fa-check-circle';
+                colorClass = 'text-green-500';
+            } else if (type === "error") {
+                iconClass = 'fa-exclamation-triangle';
+                colorClass = 'text-red-500';
+            } else {
+                iconClass = 'fa-info-circle';
+                colorClass = 'text-blue-500';
+            }
+
+            alertBox.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 text-center z-50 max-w-sm w-full';
+            alertBox.style.cssText = 'animation: fadeIn 0.3s ease-in-out;';
+
+            alertBox.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <div class="${colorClass} text-4xl mb-4">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+                    <button onclick="this.parentElement.remove()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">Đóng</button>
+                </div>
+            `;
+            document.body.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.style.cssText = 'animation: fadeOut 0.3s ease-in-out;';
+                setTimeout(() => alertBox.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
