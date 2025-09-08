@@ -1,0 +1,78 @@
+﻿@model PaymentServiceViewModel
+@using System.Globalization
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - Viroom.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .payment-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container payment-container">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h1 class="fw-bold">Thanh Toán Gói Dịch Vụ</h1>
+                <p class="text-muted">Vui lòng quét mã QR để hoàn tất thanh toán và nâng cấp tài khoản của bạn.</p>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Hướng dẫn thanh toán -->
+            <div class="col-md-6 mb-4">
+                <h4 class="fw-bold text-primary">Hướng dẫn thanh toán</h4>
+                <ul class="list-group list-group-flush mt-3">
+                    <li class="list-group-item">
+                        <span class="fw-bold text-primary me-2">1.</span> Mở ứng dụng ngân hàng của bạn.
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold text-primary me-2">2.</span> Chọn chức năng quét mã QR.
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold text-primary me-2">3.</span> Quét mã QR ở bên phải.
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold text-primary me-2">4.</span> Đảm bảo nội dung chuyển khoản là "@Model.Username chuyen khoan goi thang Virroom" để hệ thống tự động xác nhận.
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold text-primary me-2">5.</span> Hoàn tất giao dịch. Hệ thống sẽ tự động nâng cấp tài khoản của bạn.
+                    </li>
+                </ul>
+            </div>
+            <!-- Mã QR và thông tin -->
+            <div class="col-md-6 text-center">
+                <h4 class="fw-bold text-primary">Thông tin thanh toán</h4>
+                <div class="d-flex justify-content-center mt-3">
+                    <img src="https://img.vietqr.io/image/MB-0347818511-compact2.jpg?amount=@Model.Price&addInfo=@Model.Username%20chuyen%20khoan%20goi%20thang%20Virroom&accountName=@Model.Username/"
+                         alt="Mã QR Thanh Toán" class="img-fluid rounded" style="max-height: 350px;">
+                </div>
+                <div class="mt-4">
+                    <p class="fw-bold mb-1">Số tiền:</p>
+                    <h3 class="text-success fw-bold"> 
+                        @string.Format(new CultureInfo("vi-VN"), "{0:N0} VNĐ", Model.Price)</h3>
+                    <p class="fw-bold mb-1 mt-3">Nội dung chuyển khoản:</p>
+                    <code class="p-2 rounded bg-light fw-bold text-danger">@Model.Username chuyen khoan goi thang Virroom</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -16,6 +16,7 @@ builder.Services.AddScoped<IGroupRepository, GroupRepostiory>();
 builder.Services.AddScoped<IGroupService, GroupService>();
 builder.Services.AddScoped<IGroupTaskRepository, GroupTaskRepository>();
 builder.Services.AddScoped<IGroupTaskService, GroupTaskService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddDbContext<Exe202Context>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn"));

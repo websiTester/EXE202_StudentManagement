@@ -1,4 +1,5 @@
 ﻿using EXE202_StudentManagement.Models;
+using EXE202_StudentManagement.Repositories.Interface;
 using EXE202_StudentManagement.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,12 +13,13 @@ namespace EXE202_StudentManagement.Controllers
 	{
 		private RoleManager<IdentityRole> _roleManager;
 		private UserManager<User> _userManager;
-
+		private IUserRepository _userRepository;
 		public AdminController(RoleManager<IdentityRole> roleManager,
-			UserManager<User> userManager)
+			UserManager<User> userManager, IUserRepository userRepository)
 		{
 			_roleManager = roleManager;
 			_userManager = userManager;
+			_userRepository = userRepository;
 		}
 
 		[HttpGet]
@@ -169,6 +171,29 @@ namespace EXE202_StudentManagement.Controllers
 				}
 			}
 			return RedirectToAction("EditRole", new { Id = roleId });
+		}
+
+		public async Task<IActionResult> ListUser(bool? updateStatus)
+		{
+			List<User> users = await _userManager.Users.ToListAsync();
+			if (updateStatus!=null)
+			{
+				if(updateStatus == true)
+				ViewBag.UpdateSuccess = true;
+			}
+			return View(users);
+		}
+
+		public async Task<IActionResult> UpdateUserStatus(string username, int accountStatus) 
+		{
+			User user = await _userManager.FindByNameAsync(username);
+			bool result = false;
+			if (user != null) 
+			{
+				user.AccountStatus = accountStatus;
+				result = _userRepository.UpdateUser(user);
+			}
+			return RedirectToAction("ListUser", new { updateStatus =  result});
 		}
 	}
 }
