@@ -19,6 +19,15 @@ builder.Services.AddScoped<IGroupTaskService, GroupTaskService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IStudentClassRepository, StudentClassRepository>();
 builder.Services.AddScoped<IStudentClassService, StudentClassService>();
+builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    });
+
+
 builder.Services.AddDbContext<Exe202Context>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn"));
