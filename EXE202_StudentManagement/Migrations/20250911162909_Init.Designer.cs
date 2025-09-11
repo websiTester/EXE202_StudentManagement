@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EXE202_StudentManagement.Migrations
 {
     [DbContext(typeof(Exe202Context))]
-    [Migration("20250904152152_Init")]
+    [Migration("20250911162909_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -453,6 +453,9 @@ namespace EXE202_StudentManagement.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AccountStatus")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
