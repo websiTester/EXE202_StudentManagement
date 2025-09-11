@@ -1,3 +1,4 @@
+using EXE202_StudentManagement.Dependency_Injection;
 using EXE202_StudentManagement.Models;
 using EXE202_StudentManagement.Repositories.Class;
 using EXE202_StudentManagement.Repositories.Interface;
@@ -10,17 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
-builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
-builder.Services.AddScoped<IAssignmentService, AssignmentService>();
-builder.Services.AddScoped<IGroupRepository, GroupRepostiory>();
-builder.Services.AddScoped<IGroupService, GroupService>();
-builder.Services.AddScoped<IGroupTaskRepository, GroupTaskRepository>();
-builder.Services.AddScoped<IGroupTaskService, GroupTaskService>();
-builder.Services.AddScoped<IClassRepository, ClassRepository>();
-builder.Services.AddScoped<IStudentClassRepository, StudentClassRepository>();
-builder.Services.AddScoped<IStudentClassService, StudentClassService>();
-builder.Services.AddScoped<IClassService, ClassService>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddMyServices1();
+builder.Services.AddMyServices2();
+builder.Services.AddMyServices3();
+builder.Services.AddMyServices4();
+
+
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
