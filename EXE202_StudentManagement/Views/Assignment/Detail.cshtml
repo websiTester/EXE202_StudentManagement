@@ -1,6 +1,4 @@
-﻿@model EXE202_StudentManagement.Models.Assignment
-
-@{
+﻿@{
     ViewData["Title"] = "Chi tiết Bài tập";
     var myGroup = ViewBag.MyGroup as EXE202_StudentManagement.Models.Group;
 }
@@ -27,23 +25,22 @@
             display: flex;
             flex-direction: column;
         }
-
         .kanban-col {
             min-height: 200px;
         }
-
         .kanban-item {
             cursor: grab;
         }
-
         .modal {
             transition: all 0.3s ease-in-out;
         }
-
-            .modal.hidden {
-                opacity: 0;
-                pointer-events: none;
-            }
+        .modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .star-rating i {
+            transition: color 0.2s ease-in-out;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -72,42 +69,88 @@
             </p>
             <p class="text-gray-700 mb-8">@Model.Description</p>
 
-          
-                <!-- Kanban -->
-                <section class="mb-12">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-tasks mr-2 text-indigo-500"></i> Tiến độ Nhóm
+      
+
+      
+
+            <!-- Kanban -->
+           
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-tasks mr-2 text-indigo-500"></i> Tiến độ Nhóm
+                    </h3>
+                    <button onclick="showCreateTaskModal()"
+                            class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold py-2 px-4 rounded-lg">
+                        <i class="fas fa-plus mr-1"></i> Tạo công việc
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <h4 class="font-semibold text-gray-800 mb-3">Cần làm</h4>
+                        <div id="todo" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <h4 class="font-semibold text-gray-800 mb-3">Đang làm</h4>
+                        <div id="doing" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <h4 class="font-semibold text-gray-800 mb-3">Hoàn thành</h4>
+                        <div id="done" class="space-y-3"></div>
+                    </div>
+                </div>
+                <div class="flex justify-center mt-10">
+                    <div class="w-full md:w-1/2 lg:w-1/3">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Submit Assignment & Remark Student -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Submit Assignment -->
+                    <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-cloud-upload-alt mr-2 text-indigo-500"></i>
+                            Nộp bài
                         </h3>
-                        <button onclick="showCreateTaskModal()"
-                                class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold py-2 px-4 rounded-lg">
-                            <i class="fas fa-plus mr-1"></i> Tạo công việc
-                        </button>
+                        <form onsubmit="handleSubmitAssignment(event)">
+                            <div class="mb-4">
+                                <label for="submit-method" class="block text-gray-700 font-semibold mb-2">Chọn phương thức nộp bài</label>
+                                <select id="submit-method" name="submit-method" onchange="toggleSubmissionMethod()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="link">Nộp bằng link</option>
+                                    <option value="file">Tải file lên</option>
+                                </select>
+                            </div>
+                            <div id="link-submission-field">
+                                <label for="submit-link" class="block text-gray-700 font-semibold mb-2">Link nộp bài (Google Drive, Github,...)</label>
+                                <input type="url" id="submit-link" name="submit-link" placeholder="Nhập đường dẫn..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                            </div>
+                            <div id="file-submission-field" class="hidden">
+                                <label for="submit-file" class="block text-gray-700 font-semibold mb-2">Tải file lên</label>
+                                <input type="file" id="submit-file" name="submit-file" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <button type="submit" class="w-full mt-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition duration-200">
+                                Nộp bài
+                            </button>
+                        </form>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
-                            <h4 class="font-semibold text-gray-800 mb-3">Cần làm</h4>
-                            <div id="todo" class="space-y-3"></div>
-                        </div>
-                        <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
-                            <h4 class="font-semibold text-gray-800 mb-3">Đang làm</h4>
-                            <div id="doing" class="space-y-3"></div>
-                        </div>
-                        <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
-                            <h4 class="font-semibold text-gray-800 mb-3">Hoàn thành</h4>
-                            <div id="done" class="space-y-3"></div>
+
+                    <!-- Remark Other Student -->
+                    <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-star mr-2 text-indigo-500"></i>
+                            Đánh giá thành viên
+                        </h3>
+                        <div id="remark-list" class="space-y-4">
+                            <!-- Student remark items will be inserted here by JavaScript -->
                         </div>
                     </div>
-                    <div class="flex justify-center mt-10">
-                        <div class="w-full md:w-1/2 lg:w-1/3">
-                            <canvas id="progress-chart"></canvas>
-                        </div>
-                    </div>
-                </section>
-            
+                </div>
         </div>
     </main>
 
+
+
+           
     <!-- Modal tạo task -->
     <div id="create-task-modal"
          class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
@@ -158,8 +201,15 @@
 
     <!-- Script -->
     <script>
+
+        const members = [
+            { id: 'member1', name: 'Nguyễn Văn B' },
+            { id: 'member2', name: 'Trần Thị C' },
+            { id: 'member3', name: 'Lê Văn D' },
+        ];
+
         const tasksData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-            Model.GroupTasks?.Where(t => t.GroupId == myGroup?.GroupId)
+            ((IEnumerable<GroupTask>)Model.GroupTasks).Where(t => t.GroupId == myGroup?.GroupId)
             .Select(t => new
             {
                 taskId = t.TaskId,
@@ -240,6 +290,7 @@
             const task = tasksData.find(x => x.taskId === id);
             if (task) task.status = newStatus;
 
+            el.className = `kanban-item bg-white p-3 rounded-lg shadow-md border-l-4 ${borderColor(newStatus)}`;
             renderChart();
 
             fetch("/api/GroupTask/UpdateStatus", {
@@ -276,10 +327,57 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-
-            console.log(tasksData)
-
+            if (@(Model.IsGroupAssignment?.ToString().ToLower() ?? "false")) {
+                renderKanban();
+                renderChart();
+            }
         });
+
+
+        function handleRating(memberId, stars) {
+            console.log(`Đã gửi đánh giá ${stars} sao cho thành viên ${memberId}`);
+            alert(`Đã gửi đánh giá ${stars} sao cho thành viên ${members.find(m => m.id === memberId).name}`, 'success');
+        }
+        function toggleSubmissionMethod() {
+            const method = document.getElementById('submit-method').value;
+            document.getElementById('link-submission-field').classList.toggle('hidden', method === 'file');
+            document.getElementById('file-submission-field').classList.toggle('hidden', method === 'link');
+            document.getElementById('submit-link').required = (method === 'link');
+        }
+        function handleSubmitAssignment(event) {
+            event.preventDefault();
+            const method = document.getElementById('submit-method').value;
+            let submitted = false;
+            if (method === 'link') {
+                const submitLink = document.getElementById("submit-link").value;
+                if (submitLink) {
+                    alert("Nộp bài thành công!", "success");
+                    submitted = true;
+                } else {
+                    alert("Vui lòng nhập link nộp bài.", "error");
+                }
+            } else if (method === 'file') {
+                const submitFile = document.getElementById("submit-file").files[0];
+                if (submitFile) {
+                    alert("Nộp file thành công!", "success");
+                    submitted = true;
+                } else {
+                    alert("Vui lòng chọn file để nộp.", "error");
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
     </script>
 </body>
 </html>
