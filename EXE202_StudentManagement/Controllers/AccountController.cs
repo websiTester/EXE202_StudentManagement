@@ -10,15 +10,24 @@ namespace EXE202_StudentManagement.Controllers
 
 		private UserManager<User> _userManager;
 		private SignInManager<User> _signInManager;
-
-		public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+		private RoleManager<IdentityRole> _roleManager;
+		public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
+			_roleManager = roleManager;
 		}
+
+		[HttpGet]
+		public async Task<IActionResult> SelectRoleBeforeLogin()
+		{
+			return View();
+		}
+
 		[HttpGet]
 		public async Task<IActionResult> Login()
 		{
+			
 			return View();
 		}
 
@@ -49,9 +58,14 @@ namespace EXE202_StudentManagement.Controllers
 
 
 		[HttpGet]
-		public IActionResult Register()
+		public IActionResult Register(string? role)
 		{
-			return View();
+			RegisterViewModel model = new RegisterViewModel();
+			if(role != null)
+			{
+				model.Role = role;
+			}
+			return View(model);
 		}
 
 		[HttpPost]
@@ -69,6 +83,8 @@ namespace EXE202_StudentManagement.Controllers
 				if (result.Succeeded)
 				{
 					ViewBag.ErrorTitle = "Registration successful";
+					await _userManager.AddToRoleAsync(user, model.Role);
+					
 					return View("RegisterSuccess");
 				}
 				else

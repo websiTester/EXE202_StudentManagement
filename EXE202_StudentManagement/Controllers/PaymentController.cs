@@ -28,7 +28,7 @@ namespace EXE202_StudentManagement.Controllers
 		[HttpPost]
 		public async Task<IActionResult> PayQR(PaymentServiceViewModel model)
 		{
-
+			
 			return View(model);
 		}
 	}

@@ -59,7 +59,7 @@
             <div class="col-md-6 text-center">
                 <h4 class="fw-bold text-primary">Thông tin thanh toán</h4>
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="https://img.vietqr.io/image/MB-0347818511-compact2.jpg?amount=@Model.Price&addInfo=@Model.Username%20chuyen%20khoan%20goi%20thang%20Virroom&accountName=@Model.Username/"
+                    <img src="https://img.vietqr.io/image/MB-0347818511-compact2.jpg?amount=@Model.Price&addInfo=@(Model.Username)_Virroom_@(Model.Description)&accountName=@Model.Username/"
                          alt="Mã QR Thanh Toán" class="img-fluid rounded" style="max-height: 350px;">
                 </div>
                 <div class="mt-4">
@@ -68,7 +68,7 @@
                         @string.Format(new CultureInfo("vi-VN"), "{0:N0} VNĐ", Model.Price)
                     </h3>
                     <p class="fw-bold mb-1 mt-3">Nội dung chuyển khoản:</p>
-                    <code class="p-2 rounded bg-light fw-bold text-danger">@Model.Username chuyen khoan goi thang Virroom</code>
+                    <code class="p-2 rounded bg-light fw-bold text-danger">@(Model.Username)_Virroom_@(Model.Description)</code>
                 </div>
             </div>
         </div>

@@ -24,6 +24,7 @@
                         <!-- Form -->
                         <form action="/account/register" method="POST">
                             <div style="margin-left: 20px" asp-validation-summary="All" class="text-danger"></div>
+                            <input type="hidden" asp-for="Role"/>
                             <div class="row mb-4">
                                 <div class="col-md-12">
                                     <div class="form-floating">
