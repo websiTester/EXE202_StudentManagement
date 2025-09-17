@@ -9,6 +9,12 @@ namespace EXE202_StudentManagement.Controllers
             return View();
         }
 
+        public IActionResult Introduction()
+        {
+            ViewData["ActivePage"] = "Introduction";
+            return View();
+        }
+
         public IActionResult StudentHome()
         {
             ViewData["ActivePage"] = "Home";

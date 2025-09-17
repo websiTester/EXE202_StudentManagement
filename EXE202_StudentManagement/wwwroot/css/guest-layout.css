@@ -1,0 +1,98 @@
+﻿:root {
+    --primary: #6d5cff;
+    --primary-dark: #4a3aff;
+    --bg-page: linear-gradient(90deg,#dfe6ff,#c7d2fe);
+}
+
+/* Reset */
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-page);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.guest-header {
+    background: #fff;
+    height: 64px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.container.header-content {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+
+.auth-links {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.btn-outline {
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+}
+
+    .btn-outline:hover {
+        background: var(--primary);
+        color: #fff;
+    }
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+}
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+    }
+
+/* Content */
+.main-content {
+    flex: 1;
+    padding-top: 64px; /* tránh header đè */
+}
+
+/* Footer */
+.guest-footer {
+    height: 48px;
+    background: #fff;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #666;
+}
