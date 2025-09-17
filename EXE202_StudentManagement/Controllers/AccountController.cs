@@ -124,5 +124,11 @@ namespace EXE202_StudentManagement.Controllers
 				return Json($"Email {Email} is already in use");
 			}
 		}
+
+		public async Task<IActionResult> Logout()
+		{
+			await _signInManager.SignOutAsync();
+			return RedirectToAction("Introduction", "Home");
+		}
 	}
 }

@@ -1,20 +1,14 @@
 ﻿@model List<User>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Người Dùng</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+@section Styles{
     <style>
         body {
             background-color: #f8f9fa;
         }
 
-        .container {
+        /* .container {
             margin-top: 50px;
-        }
+        } */
 
         .table-container {
             background-color: white;
@@ -40,8 +34,10 @@
             margin: 0 5px;
         }
     </style>
-</head>
-<body>
+}
+@{
+    Layout = "_AdminLayout";
+}
     <div class="container">
         <h2 class="text-center mb-4">Quản Lý Người Dùng</h2>
         @if (ViewBag.UpdateSuccess != null)
@@ -50,6 +46,12 @@
         }
 
         <div class="table-container">
+        <form class="d-flex mb-4" action="/admin/filteruser" method="post">
+            
+                <input name="username" type="text" class="form-control me-2" placeholder="Tìm kiếm người dùng...">
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            
+        </form>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead>
@@ -106,23 +108,25 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".user-status-select").forEach(function (select) {
-                select.addEventListener("change", function () {
-                    // tìm đến hàng <tr> chứa select này
-                    let row = select.closest("tr");
 
-                    // tìm input hidden trong form cùng hàng
-                    let hiddenInput = row.querySelector('input[name="accountStatus"]');
 
-                    if (hiddenInput) {
-                        hiddenInput.value = select.value; // cập nhật giá trị
-                    }
+    @section Scripts{
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll(".user-status-select").forEach(function (select) {
+                    select.addEventListener("change", function () {
+                        // tìm đến hàng <tr> chứa select này
+                        let row = select.closest("tr");
+
+                        // tìm input hidden trong form cùng hàng
+                        let hiddenInput = row.querySelector('input[name="accountStatus"]');
+
+                        if (hiddenInput) {
+                            hiddenInput.value = select.value; // cập nhật giá trị
+                        }
+                    });
                 });
             });
-        });
-    </script>
-</body>
-</html>
+        </script>
+    }
+   
