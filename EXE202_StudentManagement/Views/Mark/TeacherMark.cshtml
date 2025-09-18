@@ -1,0 +1,231 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Trang chấm điểm";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chấm điểm Nhóm - Viroom.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(90deg, #e0e7ff, #c7d2fe, #a5b4fc);
+            min-height: 100vh;
+        }
+        /* Task Tag Styles */
+        .task-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 9999px;
+            line-height: 1.5;
+        }
+
+        .task-todo {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .task-doing {
+            background-color: #fef9c3;
+            color: #a16207;
+        }
+
+        .task-done {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    @* <!-- Header --> *@
+    @* <header class="bg-white bg-opacity-80 shadow-sm sticky top-0 z-50 backdrop-blur-sm"> *@
+    @*     <div class="container mx-auto px-4 py-4 flex justify-between items-center"> *@
+    @*         <div class="flex items-center space-x-2"> *@
+    @*             <i class="fas fa-users-class text-2xl text-indigo-500"></i> *@
+    @*             <h1 class="text-2xl font-bold text-gray-800">Viroom</h1> *@
+    @*         </div> *@
+    @*         <nav class="flex items-center space-x-6"> *@
+    @*             <a href="./group_list.html" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Bảng điều khiển</a> *@
+    @*             <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Thông báo</a> *@
+    @*             <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Hồ sơ</a> *@
+    @*         </nav> *@
+    @*         <div class="flex items-center space-x-4"> *@
+    @*             <span class="text-gray-700 font-medium">Xin chào, TS. Lê Thị B</span> *@
+    @*             <i class="fas fa-user-circle text-3xl text-gray-500"></i> *@
+    @*         </div> *@
+    @*     </div> *@
+    @* </header> *@
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div id="grading-panel">
+            <div class="mb-6">
+                <a href="./group_list.html" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium mb-4">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Trở về danh sách nhóm
+                </a>
+                <h2 class="text-3xl font-bold text-gray-800">Nhóm 1 - Tên lửa (Mặc định)</h2>
+                <p class="text-gray-600">Chi tiết bài nộp và đánh giá thành viên</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <!-- Submitted File Section -->
+                <div class="bg-indigo-50 rounded-lg p-4 mb-6 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-file-archive text-2xl text-indigo-500"></i>
+                        <div>
+                            <p class="font-semibold text-gray-700">Tài liệu đã nộp:</p>
+                            <p class="text-sm text-indigo-700">BaoCao_Nhom1.pdf</p>
+                        </div>
+                    </div>
+                    <a href="#" download class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center space-x-2">
+                        <i class="fas fa-download"></i>
+                        <span>Tải về</span>
+                    </a>
+                </div>
+
+                <!-- Member Evaluation Section -->
+                <h4 class="text-lg font-semibold text-gray-700 mb-4">Đánh giá thành viên</h4>
+                <form id="evaluation-form">
+                    <div class="space-y-6">
+                        <!-- Member 1 -->
+                        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-start border-t border-gray-200 pt-4 first:pt-0 first:border-t-0">
+                            <div class="md:col-span-4">
+                                <p class="font-semibold text-gray-800">Nguyễn Văn An</p>
+                                <!-- Summary View -->
+                                <div class="mt-2 flex items-center space-x-6">
+                                    <div class="text-center"><p class="text-xl font-bold text-gray-500">1</p><p class="text-xs text-gray-400 uppercase">Cần làm</p></div>
+                                    <div class="text-center"><p class="text-xl font-bold text-yellow-500">1</p><p class="text-xs text-gray-400 uppercase">Đang làm</p></div>
+                                    <div class="text-center"><p class="text-xl font-bold text-green-500">2</p><p class="text-xs text-gray-400 uppercase">Hoàn thành</p></div>
+                                    <button type="button" class="view-details-btn ml-auto text-sm text-indigo-600 hover:text-indigo-800 font-medium" data-target="member-101-details">Xem chi tiết</button>
+                                </div>
+                                <!-- Detailed View (hidden by default) -->
+                                <div id="member-101-details" class="mt-4 space-y-3 hidden border-t border-gray-200 pt-3">
+                                    <div><p class="text-xs font-semibold text-gray-400 uppercase">CẦN LÀM (1)</p><div class="flex flex-wrap gap-1 mt-1"><span class="task-tag task-todo">Viết phần mở đầu</span></div></div>
+                                    <div><p class="text-xs font-semibold text-yellow-500 uppercase">ĐANG LÀM (1)</p><div class="flex flex-wrap gap-1 mt-1"><span class="task-tag task-doing">Thiết kế slide</span></div></div>
+                                    <div><p class="text-xs font-semibold text-green-500 uppercase">HOÀN THÀNH (2)</p><div class="flex flex-wrap gap-1 mt-1"><span class="task-tag task-done">Tìm tài liệu tham khảo</span><span class="task-tag task-done">Phân tích yêu cầu</span></div></div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-1"><label for="score-101" class="block text-sm font-medium text-gray-700 mb-1">Điểm</label><input type="number" id="score-101" name="score-101" min="0" max="10" step="0.5" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder=".../10"></div>
+                            <div class="md:col-span-2"><label for="comment-101" class="block text-sm font-medium text-gray-700 mb-1">Nhận xét</label><textarea id="comment-101" name="comment-101" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Thêm nhận xét..."></textarea></div>
+                        </div>
+                        <!-- Member 2 -->
+                        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-start border-t border-gray-200 pt-4">
+                            <div class="md:col-span-4">
+                                <p class="font-semibold text-gray-800">Trần Thị Bình</p>
+                                <!-- Summary View -->
+                                <div class="mt-2 flex items-center space-x-6">
+                                    <div class="text-center"><p class="text-xl font-bold text-gray-500">0</p><p class="text-xs text-gray-400 uppercase">Cần làm</p></div>
+                                    <div class="text-center"><p class="text-xl font-bold text-yellow-500">1</p><p class="text-xs text-gray-400 uppercase">Đang làm</p></div>
+                                    <div class="text-center"><p class="text-xl font-bold text-green-500">3</p><p class="text-xs text-gray-400 uppercase">Hoàn thành</p></div>
+                                    <button type="button" class="view-details-btn ml-auto text-sm text-indigo-600 hover:text-indigo-800 font-medium" data-target="member-102-details">Xem chi tiết</button>
+                                </div>
+                                <!-- Detailed View (hidden by default) -->
+                                <div id="member-102-details" class="mt-4 space-y-3 hidden border-t border-gray-200 pt-3">
+                                    <div><p class="text-xs font-semibold text-gray-400 uppercase">CẦN LÀM (0)</p><div class="flex flex-wrap gap-1 mt-1"><span class="text-xs text-gray-400 italic">Không có</span></div></div>
+                                    <div><p class="text-xs font-semibold text-yellow-500 uppercase">ĐANG LÀM (1)</p><div class="flex flex-wrap gap-1 mt-1"><span class="task-tag task-doing">Tổng hợp nội dung</span></div></div>
+                                    <div><p class="text-xs font-semibold text-green-500 uppercase">HOÀN THÀNH (3)</p><div class="flex flex-wrap gap-1 mt-1"><span class="task-tag task-done">Viết chương 1</span><span class="task-tag task-done">Viết chương 2</span><span class="task-tag task-done">Tạo biểu đồ</span></div></div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-1"><label for="score-102" class="block text-sm font-medium text-gray-700 mb-1">Điểm</label><input type="number" id="score-102" name="score-102" min="0" max="10" step="0.5" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder=".../10"></div>
+                            <div class="md:col-span-2"><label for="comment-102" class="block text-sm font-medium text-gray-700 mb-1">Nhận xét</label><textarea id="comment-102" name="comment-102" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Thêm nhận xét..."></textarea></div>
+                        </div>
+                        <!-- Member 3 -->
+                        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-start border-t border-gray-200 pt-4">
+                            <div class="md:col-span-4">
+                                <p class="font-semibold text-gray-800">Lê Văn Cường</p>
+                                <!-- Summary View -->
+                                <div class="mt-2 flex items-center space-x-6">
+                                    <div class="text-center"><p class="text-xl font-bold text-gray-500">2</p><p class="text-xs text-gray-400 uppercase">Cần làm</p></div>
+                                    <div class="text-center"><p class="text-xl font-bold text-yellow-500">0</p><p class="text-xs text-gray-400 uppercase">Đang làm</p></div>
+                                    <div class="text-center"><p class="text-xl font-bold text-green-500">2</p><p class="text-xs text-gray-400 uppercase">Hoàn thành</p></div>
+                                    <button type="button" class="view-details-btn ml-auto text-sm text-indigo-600 hover:text-indigo-800 font-medium" data-target="member-103-details">Xem chi tiết</button>
+                                </div>
+                                <!-- Detailed View (hidden by default) -->
+                                <div id="member-103-details" class="mt-4 space-y-3 hidden border-t border-gray-200 pt-3">
+                                    <div><p class="text-xs font-semibold text-gray-400 uppercase">CẦN LÀM (2)</p><div class="flex flex-wrap gap-1 mt-1"><span class="task-tag task-todo">Chuẩn bị thuyết trình</span><span class="task-tag task-todo">Kiểm tra lại báo cáo</span></div></div>
+                                    <div><p class="text-xs font-semibold text-yellow-500 uppercase">ĐANG LÀM (0)</p><div class="flex flex-wrap gap-1 mt-1"><span class="text-xs text-gray-400 italic">Không có</span></div></div>
+                                    <div><p class="text-xs font-semibold text-green-500 uppercase">HOÀN THÀNH (2)</p><div class="flex flex-wrap gap-1 mt-1"><span class="task-tag task-done">Code chức năng A</span><span class="task-tag task-done">Code chức năng B</span></div></div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-1"><label for="score-103" class="block text-sm font-medium text-gray-700 mb-1">Điểm</label><input type="number" id="score-103" name="score-103" min="0" max="10" step="0.5" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder=".../10"></div>
+                            <div class="md:col-span-2"><label for="comment-103" class="block text-sm font-medium text-gray-700 mb-1">Nhận xét</label><textarea id="comment-103" name="comment-103" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Thêm nhận xét..."></textarea></div>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-right">
+                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                            <i class="fas fa-save mr-2"></i>Lưu đánh giá
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    @* <!-- Footer --> *@
+    @* <footer class="bg-white bg-opacity-80 text-gray-800 py-6 mt-auto"> *@
+    @*     <div class="container mx-auto px-4 text-center"> *@
+    @*         <p>&copy; 2024 Viroom.com. Tất cả quyền được bảo lưu.</p> *@
+    @*     </div> *@
+    @* </footer> *@
+
+    <script>
+        // Handle form submission alert
+        document.getElementById('evaluation-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            console.log("Form submitted.");
+            showCustomAlert('Đã lưu đánh giá thành công!');
+        });
+
+        // Add functionality for "View Details" buttons
+        document.querySelectorAll('.view-details-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                const detailsPanel = document.getElementById(targetId);
+                if (detailsPanel) {
+                    const isHidden = detailsPanel.classList.contains('hidden');
+                    if (isHidden) {
+                        detailsPanel.classList.remove('hidden');
+                        button.textContent = 'Ẩn chi tiết';
+                    } else {
+                        detailsPanel.classList.add('hidden');
+                        button.textContent = 'Xem chi tiết';
+                    }
+                }
+            });
+        });
+
+        // Function to show custom alert
+        function showCustomAlert(message) {
+            const existingAlert = document.querySelector('.custom-alert');
+            if (existingAlert) existingAlert.remove();
+
+            const alertBox = document.createElement('div');
+            alertBox.className = 'custom-alert fixed top-5 right-5 bg-white rounded-lg shadow-xl p-4 flex items-center space-x-3 z-[100]';
+            alertBox.style.cssText = 'animation: slideIn 0.3s ease-out;';
+            alertBox.innerHTML = `
+                <div class="text-green-500 text-2xl"><i class="fas fa-check-circle"></i></div>
+                <p class="font-semibold text-gray-800">${message}</p>`;
+            document.body.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.style.animation = 'fadeOut 0.5s ease-in-out forwards';
+                setTimeout(() => alertBox.remove(), 500);
+            }, 3000);
+        }
+    </script>
+    
+</body>
+</html>
+
+
+
