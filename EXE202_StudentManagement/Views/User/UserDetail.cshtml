@@ -5,48 +5,48 @@
 }
 
 @section Styles {
-    <style>
-        .user-detail-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+<style>
+    .user-detail-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        .profile-avatar {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    .profile-avatar {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-        .info-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
+    .info-list {
+    list-style-type: none;
+    padding-left: 0;
+    }
 
-            .info-list li {
-                padding: 10px 0;
-                border-bottom: 1px solid #eee;
-                display: flex;
-                justify-content: space-between;
-            }
+    .info-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    }
 
-                .info-list li:last-child {
-                    border-bottom: none;
-                }
+    .info-list li:last-child {
+    border-bottom: none;
+    }
 
-        .info-label {
-            font-weight: 600;
-            color: #6c757d;
-        }
+    .info-label {
+    font-weight: 600;
+    color: #6c757d;
+    }
 
-        .action-buttons a {
-            margin-right: 10px;
-        }
-    </style>
+    .action-buttons a {
+    margin-right: 10px;
+    }
+</style>
 }
 
 <section style="margin: 40px 0" class="full-height">
@@ -58,11 +58,11 @@
                 <!-- Cột trái: Avatar và Tên -->
                 <div class="col-md-4 text-center">
                     <img src="https://placehold.co/150x150/EFEFEF/333333?text=Avatar"
-                         alt="Avatar người dùng" class="profile-avatar mb-3" />
+                    alt="Avatar người dùng" class="profile-avatar mb-3" />
                     <h4 class="mb-1">
                         @(string.IsNullOrWhiteSpace(Model.FirstName + " " + Model.LastName)
-                            ? "--"
-                            : Model.FirstName + " " + Model.LastName)
+                                    ? "--"
+                                    : Model.FirstName + " " + Model.LastName)
                     </h4>
                     <p class="text-muted">@(!string.IsNullOrWhiteSpace(Model.UserName) ? Model.UserName : "--")</p>
                 </div>
@@ -97,14 +97,37 @@
                         </li>
                         <li>
                             <span class="info-label"><i class="fas fa-calendar-alt me-2"></i>Ngày tham gia</span>
-                            <span>Chưa có dữ liệu</span>
+                            <span>
+                                @(Model.CreateAt.HasValue
+                                            ? Model.CreateAt.Value.ToString("dd/MM/yyyy")
+                                            : "--")
+                            </span>
                         </li>
                     </ul>
                     <hr />
                     <!-- Các nút hành động -->
                     <div class="action-buttons mt-4">
-                        <a href="#" class="btn btn-danger"><i class="fas fa-trash-alt me-1"></i> Xóa tài khoản</a>
-                        <a asp-action="Index" asp-controller="User" class="btn btn-secondary">
+                        @if (Model.isActive)
+                        {
+                            <form asp-action="Deactivate" asp-controller="User" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Bạn có chắc muốn xoá tài khoản này không?');">
+                                    <i class="fas fa-trash-alt me-1"></i> Xóa tài khoản
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Reactivate" asp-controller="User" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-success"
+                                        onclick="return confirm('Bạn có chắc muốn khởi động tài khoản này không?');">
+                                    <i class="fas fa-trash-alt me-1"></i> Khởi động lại tài khoản
+                                </button>
+                            </form>
+                        }
+                        <a asp-action="ListUser" asp-controller="Admin" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
                         </a>
                     </div>
