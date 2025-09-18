@@ -10,6 +10,8 @@ public partial class User : IdentityUser
     public string? FirstName { get; set; }
 	public string? LastName { get; set; }
 	public int AccountStatus { get; set; }
+    public bool isActive { get; set; }
+    public DateTime? CreateAt { get; set; }
 
 	public virtual ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
 

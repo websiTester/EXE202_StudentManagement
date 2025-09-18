@@ -19,37 +19,55 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+                body {
+                        font-family: 'Inter', sans-serif;
+                        background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
+                        min-height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+
         }
-        .kanban-col {
-            min-height: 200px;
+
+                .kanban-col {
+                        min-height: 200px;
+
         }
-        .kanban-item {
-            cursor: grab;
+
+                .kanban-item {
+                        cursor: grab;
+
         }
-        .modal {
-            transition: all 0.3s ease-in-out;
+
+                .modal {
+                        transition: all 0.3s ease-in-out;
+
         }
-        .modal.hidden {
-            opacity: 0;
-            pointer-events: none;
+
+                    .modal.hidden {
+                            opacity: 0;
+                            pointer-events: none;
+
+            }
+
+                .star-rating i {
+                        transition: color 0.2s ease-in-out;
+
         }
-        .star-rating i {
-            transition: color 0.2s ease-in-out;
+
+       
+
+        .submission-link-container {
+            display: block;
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            font-family: monospace; /* Font cố định giúp link dễ đọc hơn */
         }
+
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- Header -->
-
-
-    <!-- Main -->
     <main class="container mx-auto px-4 py-8 flex-grow">
         <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-10">
             <h2 class="text-3xl font-bold text-gray-800 mb-4">Bài tập: @Model.Title</h2>
@@ -60,49 +78,81 @@
             </p>
             <p class="text-gray-700 mb-8">@Model.Description</p>
 
-      
 
-      
 
-            <!-- Kanban -->
-           
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-2xl font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-tasks mr-2 text-indigo-500"></i> Tiến độ Nhóm
+
+
+
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-tasks mr-2 text-indigo-500"></i> Tiến độ Nhóm
+                </h3>
+                <button onclick="showCreateTaskModal()"
+                                      class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold py-2 px-4 rounded-lg">
+                    <i class="fas fa-plus mr-1"></i> Tạo công việc
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <h4 class="font-semibold text-gray-800 mb-3">Cần làm</h4>
+                    <div id="todo" class="space-y-3"></div>
+                </div>
+                <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <h4 class="font-semibold text-gray-800 mb-3">Đang làm</h4>
+                    <div id="doing" class="space-y-3"></div>
+                </div>
+                <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <h4 class="font-semibold text-gray-800 mb-3">Hoàn thành</h4>
+                    <div id="done" class="space-y-3"></div>
+                </div>
+            </div>
+            <div class="flex justify-center mt-10">
+                <div class="w-full md:w-1/2 lg:w-1/3">
+                    <canvas id="progress-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-cloud-upload-alt mr-2 text-indigo-500"></i>
+                        Nộp bài
                     </h3>
-                    <button onclick="showCreateTaskModal()"
-                            class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold py-2 px-4 rounded-lg">
-                        <i class="fas fa-plus mr-1"></i> Tạo công việc
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
-                        <h4 class="font-semibold text-gray-800 mb-3">Cần làm</h4>
-                        <div id="todo" class="space-y-3"></div>
-                    </div>
-                    <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
-                        <h4 class="font-semibold text-gray-800 mb-3">Đang làm</h4>
-                        <div id="doing" class="space-y-3"></div>
-                    </div>
-                    <div class="bg-gray-100 rounded-lg p-4 shadow-inner kanban-col" ondrop="drop(event)" ondragover="allowDrop(event)">
-                        <h4 class="font-semibold text-gray-800 mb-3">Hoàn thành</h4>
-                        <div id="done" class="space-y-3"></div>
-                    </div>
-                </div>
-                <div class="flex justify-center mt-10">
-                    <div class="w-full md:w-1/2 lg:w-1/3">
-                        <canvas id="progress-chart"></canvas>
-                    </div>
-                </div>
 
-                <!-- Submit Assignment & Remark Student -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Submit Assignment -->
-                    <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-cloud-upload-alt mr-2 text-indigo-500"></i>
-                            Nộp bài
-                        </h3>
+                    @{
+                        var submission = ViewBag.Submission as AssignmentSubmission;
+                    }
+
+                    @if (submission != null)
+                    {
+                        <div class="p-4 bg-green-100 border border-green-300 text-green-700 rounded-lg mb-4">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Đã nộp bài thành công vào lúc @submission.SubmittedAt?.ToString("HH:mm dd/MM/yyyy").
+                        </div>
+
+                        <div class="mb-4">
+                            <span class="block text-gray-700 font-semibold mb-2">Bài đã nộp:</span>
+                            @if (submission.SubmitLink.StartsWith("http"))
+                            {
+                                <div class="submission-link-container">
+                                    <a href="@submission.SubmitLink" target="_blank" class="text-indigo-600 hover:underline">@submission.SubmitLink</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <a href="@submission.SubmitLink" class="text-indigo-600 hover:underline">
+                                    <i class="fas fa-file-alt mr-2"></i>
+                                    Tải file đã nộp xuống
+                                </a>
+                            }
+                        </div>
+
+                        <button onclick="handleCancelSubmission(event, @Model.Id)" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition duration-200">
+                            <i class="fas fa-times mr-2"></i>Hủy nộp bài
+                        </button>
+                    }
+                    else
+                    {
                         <form onsubmit="handleSubmitAssignment(event)">
                             <div class="mb-4">
                                 <label for="submit-method" class="block text-gray-700 font-semibold mb-2">Chọn phương thức nộp bài</label>
@@ -113,38 +163,35 @@
                             </div>
                             <div id="link-submission-field">
                                 <label for="submit-link" class="block text-gray-700 font-semibold mb-2">Link nộp bài (Google Drive, Github,...)</label>
-                                <input type="url" id="submit-link" name="submit-link" placeholder="Nhập đường dẫn..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                <input type="url" id="submit-link" name="submit-link" placeholder="Nhập đường dẫn..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             </div>
                             <div id="file-submission-field" class="hidden">
                                 <label for="submit-file" class="block text-gray-700 font-semibold mb-2">Tải file lên</label>
-                                <input type="file" id="submit-file" name="submit-file" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <input type="file" id="submit-file" name="submit-file" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" accept=".rar, .zip">
                             </div>
                             <button type="submit" class="w-full mt-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition duration-200">
                                 Nộp bài
                             </button>
                         </form>
-                    </div>
-
-                    <!-- Remark Other Student -->
-                    <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-star mr-2 text-indigo-500"></i>
-                            Đánh giá thành viên
-                        </h3>
-                        <div id="remark-list" class="space-y-4">
-                            <!-- Student remark items will be inserted here by JavaScript -->
-                        </div>
+                    }
+                </div>
+                <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 border border-gray-200">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-star mr-2 text-indigo-500"></i>
+                        Đánh giá thành viên
+                    </h3>
+                    <div id="remark-list" class="space-y-4">
                     </div>
                 </div>
+            </div>
         </div>
     </main>
 
 
 
-           
-    <!-- Modal tạo task -->
+
     <div id="create-task-modal"
-         class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+              class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-gray-800">Tạo công việc mới</h3>
@@ -158,11 +205,16 @@
 
                 <label class="block text-gray-700 font-semibold mb-2">Tên công việc</label>
                 <input type="text" id="task-name"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4" required />
-
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4" required />
+                <label class="block text-gray-700 font-semibold mb-2">Điểm</label>
+                <input type="number" id="task-points"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
+                                   min="1"
+                                   max="100"
+                                   value="1" required />
                 <label class="block text-gray-700 font-semibold mb-2">Phân công cho</label>
                 <select id="task-assignee"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4" required>
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4" required>
                     <option value="" disabled selected>-- Chọn thành viên --</option>
                     @if (myGroup?.StudentGroups != null)
                     {
@@ -176,15 +228,32 @@
                 </select>
 
                 <button type="submit"
-                        class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg">
+                                    class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg">
                     Tạo
                 </button>
             </form>
         </div>
     </div>
+    <div id="delete-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Xác nhận xóa</h3>
+                <button onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p class="text-gray-600 mb-6">Bạn có chắc chắn muốn xóa công việc này không? Thao tác này không thể hoàn tác.</p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="closeDeleteModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg">
+                    Hủy
+                </button>
+                <button id="confirm-delete-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">
+                    Xóa
+                </button>
+            </div>
+        </div>
+    </div>
 
-   
-    <!-- Script -->
     <script>
 
         const members = [
@@ -200,6 +269,7 @@
                 taskId = t.TaskId,
                 title = t.Title,
                 status = (t.Status ?? "").Trim().ToLower(),
+                points = t.Points,
                 assignedToName = (t.AssignedToNavigation != null
             ? (t.AssignedToNavigation.FirstName + " " + t.AssignedToNavigation.LastName).Trim()
             : "Chưa phân công")
@@ -220,8 +290,20 @@
                 el.draggable = true;
                 el.ondragstart = drag;
                 el.id = `task-${t.taskId}`;
-                el.innerHTML = `<p class="font-medium">${t.title}</p>
-                                        <p class="text-sm text-gray-500">Người phụ trách: ${t.assignedToName}</p>`;
+                el.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <p class="font-medium">${t.title}</p>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">
+                                        ${t.points} điểm
+                                    </span>
+                                    <button class="text-red-500 hover:text-red-700" onclick="showDeleteModal(${t.taskId}, event)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Người phụ trách: ${t.assignedToName}</p>
+                        `;
 
                 if (t.status === "todo") todo.appendChild(el);
                 else if (t.status === "doing") doing.appendChild(el);
@@ -293,6 +375,7 @@
             ev.preventDefault();
             const name = document.getElementById("task-name").value;
             const assignee = document.getElementById("task-assignee").value;
+            const points = parseInt(document.getElementById("task-points").value);
             const assignmentId = parseInt(document.getElementById("assignment-id-hidden").value);
             const groupId = parseInt(document.getElementById("group-id-hidden").value);
 
@@ -302,6 +385,7 @@
                 body: JSON.stringify({
                     title: name,
                     assignedTo: assignee,
+                    points: points,
                     assignmentId,
                     groupId,
                     status: "todo"
@@ -332,37 +416,128 @@
         function handleSubmitAssignment(event) {
             event.preventDefault();
             const method = document.getElementById('submit-method').value;
-            let submitted = false;
+            const assignmentId = @Model.Id;
+
             if (method === 'link') {
                 const submitLink = document.getElementById("submit-link").value;
                 if (submitLink) {
-                    alert("Nộp bài thành công!", "success");
-                    submitted = true;
+                    fetch("/api/Assignment/SubmitLink", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            assignmentId: assignmentId,
+                            submitLink: submitLink
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi:', error);
+                            alert("Đã xảy ra lỗi khi nộp bài bằng link.");
+                        });
                 } else {
-                    alert("Vui lòng nhập link nộp bài.", "error");
+                    alert("Vui lòng nhập link nộp bài.");
                 }
             } else if (method === 'file') {
                 const submitFile = document.getElementById("submit-file").files[0];
                 if (submitFile) {
-                    alert("Nộp file thành công!", "success");
-                    submitted = true;
+                    const formData = new FormData();
+                    formData.append('file', submitFile);
+                    formData.append('assignmentId', assignmentId);
+
+                    fetch("/api/Assignment/SubmitFile", {
+                        method: "POST",
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi:', error);
+                            alert("Đã xảy ra lỗi khi nộp file.");
+                        });
                 } else {
-                    alert("Vui lòng chọn file để nộp.", "error");
+                    alert("Vui lòng chọn file để nộp.");
                 }
             }
         }
+        function handleCancelSubmission(event, assignmentId) {
+            event.preventDefault();
 
-
-
-
-
-
-
+            if (confirm("Bạn có chắc chắn muốn hủy nộp bài không?")) {
+                fetch(`/api/Assignment/CancelSubmission/${assignmentId}`, {
+                    method: "DELETE"
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi:', error);
+                        alert("Đã xảy ra lỗi khi hủy nộp bài.");
+                    });
+            }
+        }
         console.log(tasksData)
+        let taskIdToDelete = null;
 
+        // Hàm hiển thị modal xác nhận xóa
+        function showDeleteModal(taskId, event) {
+            event.stopPropagation(); // Ngăn sự kiện drag-drop
+            taskIdToDelete = taskId; // Lưu taskId vào biến toàn cục
+            document.getElementById("delete-modal").classList.remove("hidden");
+        }
 
+        // Hàm ẩn modal
+        function closeDeleteModal() {
+            document.getElementById("delete-modal").classList.add("hidden");
+            taskIdToDelete = null; // Reset taskId
+        }
+
+        // Hàm xử lý việc xóa task khi người dùng xác nhận
+        function handleDeleteTask() {
+            if (taskIdToDelete !== null) {
+                fetch(`/api/GroupTask/Delete/${taskIdToDelete}`, {
+                    method: "DELETE"
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload(); // Tải lại trang sau khi xóa thành công
+                        } else {
+                            alert("Không thể xóa công việc. Vui lòng thử lại.");
+                            closeDeleteModal();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert("Đã xảy ra lỗi khi xóa công việc.");
+                        closeDeleteModal();
+                    });
+            }
+        }
+        // Gắn sự kiện click cho nút "Xóa" trong modal
+        document.getElementById("confirm-delete-btn").addEventListener("click", handleDeleteTask);
 
 
     </script>
 </body>
-</html>

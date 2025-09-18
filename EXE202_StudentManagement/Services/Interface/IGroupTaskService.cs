@@ -8,6 +8,9 @@ namespace EXE202_StudentManagement.Services.Interface
 
         void UpdateGroupTask(int taskId,string newStatus);
         GroupTask GetGroupTaskById(int id);
+        bool DeleteGroupTask(int taskId);
+
+        
 
     }
 }

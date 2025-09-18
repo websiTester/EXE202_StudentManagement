@@ -19,6 +19,11 @@ namespace EXE202_StudentManagement.Services.Class
 _groupTaskRepository.AddGroupTask(groupTask);
         }
 
+        public bool DeleteGroupTask(int taskId)
+        {
+            return _groupTaskRepository.DeleteTask(taskId);
+        }
+
         public GroupTask GetGroupTaskById(int id)
         {
 return _groupTaskRepository.GetGroupTaskById(id);
