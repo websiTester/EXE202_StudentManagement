@@ -189,7 +189,25 @@
             </form>
         </div>
     </div>
-
+    <div id="delete-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Xác nhận xóa</h3>
+                <button onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p class="text-gray-600 mb-6">Bạn có chắc chắn muốn xóa công việc này không? Thao tác này không thể hoàn tác.</p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="closeDeleteModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg">
+                    Hủy
+                </button>
+                <button id="confirm-delete-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">
+                    Xóa
+                </button>
+            </div>
+        </div>
+    </div>
    
     <!-- Script -->
     <script>
@@ -228,17 +246,69 @@
                 el.draggable = true;
                 el.ondragstart = drag;
                 el.id = `task-${t.taskId}`;
-                el.innerHTML = `<p class="font-medium">${t.title}</p>
-                          <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">
-                            ${t.points} điểm
-                        </span>
-                                        <p class="text-sm text-gray-500">Người phụ trách: ${t.assignedToName}</p>`;
+                el.innerHTML = `
+                             <div class="flex justify-between items-start">
+                        <p class="font-medium">${t.title}</p>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">
+                                ${t.points} điểm
+                            </span>
+                            <button class="text-red-500 hover:text-red-700" onclick="showDeleteModal(${t.taskId}, event)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Người phụ trách: ${t.assignedToName}</p>
+                `;
 
                 if (t.status === "todo") todo.appendChild(el);
                 else if (t.status === "doing") doing.appendChild(el);
                 else if (t.status === "done") done.appendChild(el);
             });
         }
+
+        let taskIdToDelete = null;
+
+        // Hàm hiển thị modal xác nhận xóa
+        function showDeleteModal(taskId, event) {
+            event.stopPropagation(); // Ngăn sự kiện drag-drop
+            taskIdToDelete = taskId; // Lưu taskId vào biến toàn cục
+            document.getElementById("delete-modal").classList.remove("hidden");
+        }
+
+        // Hàm ẩn modal
+        function closeDeleteModal() {
+            document.getElementById("delete-modal").classList.add("hidden");
+            taskIdToDelete = null; // Reset taskId
+        }
+
+        // Hàm xử lý việc xóa task khi người dùng xác nhận
+        function handleDeleteTask() {
+            if (taskIdToDelete !== null) {
+                fetch(`/api/GroupTask/Delete/${taskIdToDelete}`, {
+                    method: "DELETE"
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload(); // Tải lại trang sau khi xóa thành công
+                        } else {
+                            alert("Không thể xóa công việc. Vui lòng thử lại.");
+                            closeDeleteModal();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert("Đã xảy ra lỗi khi xóa công việc.");
+                        closeDeleteModal();
+                    });
+            }
+        }
+
+        // Gắn sự kiện click cho nút "Xóa" trong modal
+        document.getElementById("confirm-delete-btn").addEventListener("click", handleDeleteTask);
+
+
+
 
         function borderColor(status) {
             if (status === "todo") return "border-red-500";

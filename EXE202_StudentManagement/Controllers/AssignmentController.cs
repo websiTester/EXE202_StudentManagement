@@ -65,6 +65,23 @@ namespace EXE202_StudentManagement.Controllers
 
             return Ok(new { success = true, message = "Task status updated successfully." });
         }
+
+        [HttpDelete]
+        [Route("api/GroupTask/Delete/{taskId}")]
+        public IActionResult DeleteTask(int taskId)
+        {
+            var success = _groupTaskService.DeleteGroupTask(taskId);
+
+            if (success)
+            {
+                return Ok(new { success = true, message = "Task deleted successfully." });
+            }
+
+            return NotFound(new { success = false, message = "Task not found." });
+        }
+
+
+
     }
 }
 

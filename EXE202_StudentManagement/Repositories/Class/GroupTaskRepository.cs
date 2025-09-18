@@ -17,6 +17,19 @@ namespace EXE202_StudentManagement.Repositories.Class
             _context.SaveChanges();
         }
 
+        public bool DeleteTask(int taskId)
+        {
+            var taskToDelete = _context.GroupTasks.Find(taskId);
+            if (taskToDelete == null)
+            {
+                return false;
+            }
+
+            _context.GroupTasks.Remove(taskToDelete);
+            _context.SaveChanges();
+            return true;
+        }
+
         public GroupTask GetGroupTaskById(int taskId)
         {
             return _context.GroupTasks.Find(taskId);

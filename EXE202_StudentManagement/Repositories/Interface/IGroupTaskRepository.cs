@@ -8,5 +8,8 @@ namespace EXE202_StudentManagement.Repositories.Interface
         GroupTask GetGroupTaskById(int taskId);
         void UpdateGroupTask(GroupTask groupTask);
 
+        bool DeleteTask(int taskId);
+
+
     }
 }
