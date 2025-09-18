@@ -31,5 +31,53 @@ namespace EXE202_StudentManagement.Repositories.Class
             return assignment;
 
         }
+        public void AddSubmission(AssignmentSubmission submission)
+        {
+            try
+            {
+                _context.AssignmentSubmissions.Add(submission);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+
+        public AssignmentSubmission GetSubmissionByGroup(int assignmentId, int groupId)
+        {
+            var studentIdsInGroup = _context.StudentGroups
+                                            .Where(sg => sg.GroupId == groupId)
+                                            .Select(sg => sg.StudentId)
+                                            .ToList();
+
+            return _context.AssignmentSubmissions
+                           .FirstOrDefault(s => s.AssignmentId == assignmentId && studentIdsInGroup.Contains(s.StudentId));
+        }
+
+        public bool DeleteSubmission(int assignmentId, string studentId)
+        {
+            var submission = _context.AssignmentSubmissions
+                    .FirstOrDefault(s => s.AssignmentId == assignmentId && s.StudentId == studentId);
+
+            if (submission == null)
+            {
+                return false;
+            }
+
+            // Xóa file vật lý trên server nếu là bài nộp bằng file
+            if (!submission.SubmitLink.StartsWith("http"))
+            {
+                var filePath = Path.Combine("wwwroot", submission.SubmitLink.TrimStart('/'));
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+
+            _context.AssignmentSubmissions.Remove(submission);
+            _context.SaveChanges();
+            return true;
+        }
     }
 }

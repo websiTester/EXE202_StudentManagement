@@ -10,5 +10,7 @@ namespace EXE202_StudentManagement.Services.Interface
         GroupTask GetGroupTaskById(int id);
         bool DeleteGroupTask(int taskId);
 
+        
+
     }
 }
