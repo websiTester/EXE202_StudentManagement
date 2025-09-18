@@ -1,5 +1,7 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
+﻿@{
+    Layout = "_StudentLayout";
+}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,27 +29,31 @@
                 opacity: 0;
                 pointer-events: none;
             }
+
+        .class-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2ff; /* nền nhạt */
+            border-radius: 50%; /* bo tròn */
+            flex-shrink: 0;
+        }
+
+            .class-icon i {
+                font-size: 20px;
+                color: #6366f1; /* màu indigo */
+            }
+
+
+
+
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
     <!-- Header -->
-    <header class="bg-white bg-opacity-80 shadow-sm sticky top-0 z-50 backdrop-blur-sm">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fas fa-users-class text-2xl text-indigo-500"></i>
-                <h1 class="text-2xl font-bold text-gray-800">Viroom</h1>
-            </div>
-            <nav class="flex items-center space-x-6">
-                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Trang chủ</a>
-                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Thông báo</a>
-                <a href="#" class="text-gray-600 hover:text-indigo-500 font-medium transition duration-200">Hồ sơ</a>
-            </nav>
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-700 font-medium">Xin chào, Trần Văn C</span>
-                <i class="fas fa-user-circle text-3xl text-gray-500"></i>
-            </div>
-        </div>
-    </header>
+   
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 flex-grow">
@@ -70,9 +76,20 @@
                                 <h3 class="text-xl font-bold text-gray-800">@teacherClass.ClassName</h3>
                                 <p class="text-sm text-gray-600">Khóa học: @teacherClass.Course?.Name</p>
                             </div>
-                            <i class="fas fa-chalkboard-teacher text-4xl text-indigo-500 ml-4"></i>
+                            <div class="class-icon">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+
                         </div>
                         <div class="border-t border-gray-200 mt-4 pt-4 text-right">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm text-gray-600">
+                                    <span id="class-code-@teacherClass.ClassId" class="font-bold text-gray-800 tracking-wider blur-sm">@teacherClass.ClassCode</span>
+                                </p>
+                                <button onclick="toggleClassCode('@teacherClass.ClassId')" class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                                    <i id="toggle-icon-@teacherClass.ClassId" class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
                             <p class="text-sm text-gray-600 mb-2">Giảng viên: @teacherClass.Teacher?.FirstName @teacherClass.Teacher?.LastName</p>
                             <a href="/class/detail/@teacherClass.ClassId" class="inline-flex items-center text-sm font-medium text-indigo-500 hover:text-indigo-700 transition-colors duration-200">
                                 Chi tiết <i class="fas fa-arrow-right ml-2"></i>
@@ -142,12 +159,7 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white bg-opacity-80 text-gray-800 py-6 mt-auto">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2024 Viroom.com. Tất cả quyền được bảo lưu.</p>
-        </div>
-    </footer>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -189,9 +201,10 @@
                                 <div>
                                     <h3 class="text-xl font-bold text-gray-800">${c.ClassName}</h3>
                                     <p class="text-sm text-gray-600">Khóa học: ${c.CourseName || 'N/A'}</p>
-                                </div>
-                                <i class="fas fa-chalkboard-teacher text-4xl text-indigo-500 ml-4"></i>
-                            </div>
+                                     <div class="class-icon">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+
                             <div class="border-t border-gray-200 mt-4 pt-4 text-right">
                                 <p class="text-sm text-gray-600 mb-2">Giảng viên: ${c.TeacherFirstName || ''} ${c.TeacherLastName || ''}</p>
                                 <a href="/class/detail/${c.ClassId}" class="inline-flex items-center text-sm font-medium text-indigo-500 hover:text-indigo-700 transition-colors duration-200">
@@ -301,6 +314,24 @@
                 setTimeout(() => alertBox.remove(), 300);
             }, 3000);
         }
+
+        function toggleClassCode(classId) {
+            const classCodeElement = document.getElementById(`class-code-${classId}`);
+            const toggleIconElement = document.getElementById(`toggle-icon-${classId}`);
+
+            if (classCodeElement.style.filter === 'blur(4px)') {
+                // Hiện mã lớp học
+                classCodeElement.style.filter = 'none';
+                toggleIconElement.classList.remove('fa-eye');
+                toggleIconElement.classList.add('fa-eye-slash');
+            } else {
+                // Ẩn mã lớp học
+                classCodeElement.style.filter = 'blur(4px)';
+                toggleIconElement.classList.remove('fa-eye-slash');
+                toggleIconElement.classList.add('fa-eye');
+            }
+        }
+
     </script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 using EXE202_StudentManagement.Services.Class;
 using EXE202_StudentManagement.Services.Interface;
 using EXE202_StudentManagement.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EXE202_StudentManagement.Controllers
@@ -11,21 +12,28 @@ namespace EXE202_StudentManagement.Controllers
         IAssignmentService _assignmentService;
         IGroupService _groupService;
         IGroupTaskService _groupTaskService;
+        private UserManager<User> _userManager;
+        private SignInManager<User> _signInManager;
+        private RoleManager<IdentityRole> _roleManager;
 
-        public AssignmentController(IAssignmentService assignmentService, IGroupService groupService, IGroupTaskService groupTaskService)
+        public AssignmentController(IAssignmentService assignmentService, IGroupService groupService, IGroupTaskService groupTaskService, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _assignmentService = assignmentService;
             _groupService = groupService;
             _groupTaskService = groupTaskService;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         [Route("Assignment/Detail/{id}")]
-        public IActionResult Detail(int id)
+        public async Task<IActionResult> DetailAsync(int id)
         {
             var assignment=_assignmentService.GetAssignmentById(id);
-            string currentUserId = "user1";
+            User user = await _userManager.GetUserAsync(User);
 
-            var myGroup = _groupService.GetGroupByMemberId(currentUserId);
+            var myGroup = _groupService.GetGroupByMemberId(user.Id);
+            Console.WriteLine("NUMBER OF GROUPS: " + myGroup.StudentGroups.Count);
             ViewBag.MyGroup = myGroup;
             return View(assignment);
 

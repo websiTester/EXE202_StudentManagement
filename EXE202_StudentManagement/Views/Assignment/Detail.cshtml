@@ -1,10 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Chi tiết Bài tập";
     var myGroup = ViewBag.MyGroup as EXE202_StudentManagement.Models.Group;
+    Layout = "_StudentLayout";
+
 }
 
-<!DOCTYPE html>
-<html lang="vi">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,17 +47,7 @@
 <body class="flex flex-col min-h-screen">
 
     <!-- Header -->
-    <header class="bg-white bg-opacity-80 shadow-sm sticky top-0 z-50 backdrop-blur-sm">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-users-class text-indigo-500 mr-2"></i> Viroom
-            </h1>
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-700 font-medium">Xin chào, Nguyễn Văn A</span>
-                <i class="fas fa-user-circle text-3xl text-gray-500"></i>
-            </div>
-        </div>
-    </header>
+
 
     <!-- Main -->
     <main class="container mx-auto px-4 py-8 flex-grow">
@@ -192,13 +183,7 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white bg-opacity-80 text-gray-800 py-6 mt-auto">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024 Viroom.com. Tất cả quyền được bảo lưu.</p>
-        </div>
-    </footer>
-
+   
     <!-- Script -->
     <script>
 
@@ -373,7 +358,7 @@
 
 
 
-
+        console.log(tasksData)
 
 
 
