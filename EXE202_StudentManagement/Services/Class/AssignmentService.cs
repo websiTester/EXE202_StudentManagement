@@ -13,9 +13,25 @@ namespace EXE202_StudentManagement.Services.Class
             _assignmentRepository = assignmentRepository;
         }
 
+        public void AddSubmission(AssignmentSubmission submission)
+        {
+            _assignmentRepository.AddSubmission(submission);
+        }
+
+        public bool DeleteSubmission(int assignmentId, string studentId)
+        {
+            return _assignmentRepository.DeleteSubmission(assignmentId, studentId);
+        }
+
         public Assignment GetAssignmentById(int id)
         {
 return _assignmentRepository.GetAssignmentById(id);
+        }
+
+        public AssignmentSubmission GetSubmissionByGroup(int assignmentId, int groupId)
+        {
+            return _assignmentRepository.GetSubmissionByGroup(assignmentId, groupId);
+
         }
     }
 }
