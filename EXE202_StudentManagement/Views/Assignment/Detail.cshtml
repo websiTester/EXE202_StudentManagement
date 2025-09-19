@@ -54,6 +54,30 @@
 
         }
 
+        .kanban-points-gray {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #6b7280; /* gray-500 */
+        }
+
+        .kanban-points-green {
+            background-color: #d1fae5; /* green-100 */
+            color: #047857; /* green-700 */
+        }
+
+        .kanban-points-blue {
+            background-color: #dbeafe; /* blue-100 */
+            color: #1d4ed8; /* blue-700 */
+        }
+
+        .kanban-points-purple {
+            background-color: #ede9fe; /* violet-100 */
+            color: #6d28d9; /* violet-700 */
+        }
+
+        .kanban-points-orange {
+            background-color: #fff7ed; /* orange-100 */
+            color: #c2410c; /* orange-700 */
+        }
        
 
         .submission-link-container {
@@ -290,26 +314,45 @@
                 el.draggable = true;
                 el.ondragstart = drag;
                 el.id = `task-${t.taskId}`;
+                const pointsClass = getPointsColorClass(t.points);
+
                 el.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <p class="font-medium">${t.title}</p>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">
-                                        ${t.points} điểm
-                                    </span>
-                                    <button class="text-red-500 hover:text-red-700" onclick="showDeleteModal(${t.taskId}, event)">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-2">Người phụ trách: ${t.assignedToName}</p>
-                        `;
+                    <div class="flex justify-between items-start">
+                        <p class="font-medium">${t.title}</p>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-bold px-2 py-1 rounded-full ${pointsClass}">
+                                ${t.points} điểm
+                            </span>
+                            <button class="text-red-500 hover:text-red-700" onclick="showDeleteModal(${t.taskId}, event)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Người phụ trách: ${t.assignedToName}</p>
+                `;
 
                 if (t.status === "todo") todo.appendChild(el);
                 else if (t.status === "doing") doing.appendChild(el);
                 else if (t.status === "done") done.appendChild(el);
             });
         }
+
+
+        function getPointsColorClass(points) {
+            if (points >= 81) {
+                return "kanban-points-orange";
+            } else if (points >= 61) {
+                return "kanban-points-purple";
+            } else if (points >= 41) {
+                return "kanban-points-blue";
+            } else if (points >= 21) {
+                return "kanban-points-green";
+            } else {
+                return "kanban-points-gray";
+            }
+        }
+
+
 
         function borderColor(status) {
             if (status === "todo") return "border-red-500";
