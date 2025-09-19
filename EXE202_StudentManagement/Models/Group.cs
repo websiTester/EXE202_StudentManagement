@@ -10,8 +10,10 @@ public partial class Group
     public int? ClassId { get; set; }
 
     public string? GroupName { get; set; }
+    public string? LeaderId { get; set; }
 
-    public virtual Class? Class { get; set; }
+	public virtual Class? Class { get; set; }
+    public virtual User? Leader { get; set; }
 
     public virtual ICollection<GroupTask> GroupTasks { get; set; } = new List<GroupTask>();
 
