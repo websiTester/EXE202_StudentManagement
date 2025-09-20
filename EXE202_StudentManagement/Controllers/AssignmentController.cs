@@ -12,15 +12,21 @@ namespace EXE202_StudentManagement.Controllers
         IAssignmentService _assignmentService;
         IGroupService _groupService;
         IGroupTaskService _groupTaskService;
+        IPeerReviewService _peerReviewService;
+
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
         private RoleManager<IdentityRole> _roleManager;
 
-        public AssignmentController(IAssignmentService assignmentService, IGroupService groupService, IGroupTaskService groupTaskService, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
+        public AssignmentController(IAssignmentService assignmentService, 
+            IGroupService groupService, IGroupTaskService groupTaskService, 
+            IPeerReviewService peerReviewService, UserManager<User> userManager, 
+            SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _assignmentService = assignmentService;
             _groupService = groupService;
             _groupTaskService = groupTaskService;
+            _peerReviewService = peerReviewService;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
@@ -31,6 +37,7 @@ namespace EXE202_StudentManagement.Controllers
         {
             var assignment=_assignmentService.GetAssignmentById(id);
             User user = await _userManager.GetUserAsync(User);
+            ViewBag.CurrentUser = user;
 
             var myGroup = _groupService.GetGroupByMemberId(user.Id);
 
@@ -39,7 +46,22 @@ namespace EXE202_StudentManagement.Controllers
                 var submission = _assignmentService.GetSubmissionByGroup(id, myGroup.GroupId);
                 ViewBag.Submission = submission;
             }
-          
+            if (myGroup != null)
+            {
+                var groupMembers = myGroup.StudentGroups
+                                           .Where(sg => sg.StudentId != user.Id)
+                                           .Select(sg => sg.Student)
+                                           .ToList();
+                ViewBag.GroupMembers = groupMembers;
+
+                var myReviews = _peerReviewService.GetReviewsForMember(user.Id, id);
+                ViewBag.MyReviews = myReviews;
+            }
+
+
+
+
+
             ViewBag.MyGroup = myGroup;
             return View(assignment);
 
@@ -257,11 +279,76 @@ namespace EXE202_StudentManagement.Controllers
 
 
 
+        [HttpPost]
+        [Route("api/Assignment/SubmitPeerReview")]
+        public async Task<IActionResult> SubmitPeerReview([FromBody] PeerReviewViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(new { success = false, message = "Người dùng chưa đăng nhập." });
+            }
+
+            // Lấy bản đánh giá hiện có (nếu có)
+            var existingReview = _peerReviewService.GetExistingReview(user.Id, model.RevieweeId, model.AssignmentId);
+            bool result = false;
+
+            if (existingReview != null)
+            {
+                // Nếu đã có đánh giá, cập nhật điểm và nhận xét
+                existingReview.Score = model.Score;
+                existingReview.Comment = model.Comment;
+                existingReview.CreateAt = DateTime.Now;
+                result = _peerReviewService.UpdatePeerReview(existingReview);
+            }
+            else
+            {
+                // Nếu chưa có, tạo mới
+                var review = new PeerReview
+                {
+                    AssignmentId = model.AssignmentId,
+                    GroupId = model.GroupId,
+                    ReviewerId = user.Id,
+                    RevieweeId = model.RevieweeId,
+                    Comment = model.Comment,
+                    Score = model.Score,
+                    CreateAt = DateTime.Now
+                };
+                result = _peerReviewService.AddPeerReview(review);
+            }
+
+            if (result)
+            {
+                return Ok(new { success = true, message = "Đánh giá đã được gửi thành công." });
+            }
+
+            return StatusCode(500, new { success = false, message = "Lỗi khi lưu đánh giá." });
+        }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     }
+
+
+
+
+
+
+
+
 }
+
 
 
 

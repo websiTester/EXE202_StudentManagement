@@ -21,8 +21,9 @@ namespace EXE202_StudentManagement.Dependency_Injection
        services.AddScoped<IGroupTaskRepository, GroupTaskRepository>();
          services.AddScoped<IGroupTaskService, GroupTaskService>();
         services.AddScoped<IClassRepository, ClassRepository>();
-
          services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<IPeerReviewRepository,PeerReviewRepository>();
+            services.AddScoped<IPeerReviewService, PeerReviewService>();
             return services;
         }
 
