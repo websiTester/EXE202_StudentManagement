@@ -4,6 +4,10 @@
     Layout = "_StudentLayout";
 
 }
+@using EXE202_StudentManagement
+@using EXE202_StudentManagement.Models
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 
 <head>
@@ -204,7 +208,63 @@
                         <i class="fas fa-star mr-2 text-indigo-500"></i>
                         Đánh giá thành viên
                     </h3>
+                    @{
+                        var groupMembers = ViewBag.GroupMembers as List<User>;
+                        var myReviews = ViewBag.MyReviews as List<PeerReview>;
+                        var assignmentId = Model.Id;
+                    }
+
                     <div id="remark-list" class="space-y-4">
+                        @if (groupMembers != null && groupMembers.Any())
+                        {
+                            foreach (var member in groupMembers)
+                            {
+                                var existingReview = myReviews.FirstOrDefault(r => r.RevieweeId == member.Id);
+
+                                <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <p class="font-semibold text-gray-800">@member.FirstName @member.LastName</p>
+                                        @if (existingReview != null)
+                                        {
+                                            <span class="text-green-500 font-bold">Đã đánh giá</span>
+                                        }
+                                        else
+                                        {
+                                            <div class="star-rating text-yellow-400 text-lg" data-member-id="@member.Id">
+                                                <i class="far fa-star cursor-pointer" onclick="handleStarClick(this, 1)"></i>
+                                                <i class="far fa-star cursor-pointer" onclick="handleStarClick(this, 2)"></i>
+                                                <i class="far fa-star cursor-pointer" onclick="handleStarClick(this, 3)"></i>
+                                                <i class="far fa-star cursor-pointer" onclick="handleStarClick(this, 4)"></i>
+                                                <i class="far fa-star cursor-pointer" onclick="handleStarClick(this, 5)"></i>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    @if (existingReview == null)
+                                    {
+                                        <textarea class="w-full h-24 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2" placeholder="Nhận xét..."></textarea>
+                                        <button class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 rounded-lg transition duration-200"
+                                                onclick="handleSubmitRemark('@member.Id', this)">
+                                            Gửi đánh giá
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-gray-500 text-center">Bạn không có thành viên nào khác trong nhóm để đánh giá.</p>
+                        }
+                    </div>
+                    <div id="status-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+                        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-sm text-center">
+                            <div id="status-icon" class="text-5xl mb-4"></div>
+                            <h3 id="status-title" class="text-xl font-bold text-gray-800 mb-2"></h3>
+                            <p id="status-message" class="text-gray-600 mb-6"></p>
+                            <button onclick="closeStatusModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">
+                                Đóng
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -581,6 +641,91 @@
         // Gắn sự kiện click cho nút "Xóa" trong modal
         document.getElementById("confirm-delete-btn").addEventListener("click", handleDeleteTask);
 
+        // Hàm gửi đánh giá
+        function handleSubmitRemark(revieweeId, button) {
+            const container = button.closest('.bg-gray-50');
+            const score = parseInt(container.querySelector('.star-rating').dataset.score);
+            const comment = container.querySelector('textarea').value;
+            const assignmentId = @Model.Id;
+            const groupId = @(ViewBag.MyGroup != null ? ViewBag.MyGroup.GroupId : 0);
 
+            if (isNaN(score) || score === 0) {
+                alert("Vui lòng chọn số sao để đánh giá.");
+                return;
+            }
+
+            const reviewData = {
+                assignmentId: assignmentId,
+                groupId: groupId,
+                revieweeId: revieweeId,
+                comment: comment,
+                score: score
+            };
+
+            fetch("/api/Assignment/SubmitPeerReview", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reviewData)
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        showStatusModal(true, data.message); 
+                    } else {
+                        showStatusModal(false, "Đã xảy ra lỗi khi gửi đánh giá.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert("Đã xảy ra lỗi khi gửi đánh giá.");
+                });
+        }
+        function handleStarClick(star, score) {
+            const parent = star.parentNode;
+            const allStars = parent.querySelectorAll('i');
+
+            allStars.forEach(s => {
+                s.classList.remove('fas');
+                s.classList.add('far');
+            });
+
+            for (let i = 0; i < score; i++) {
+                allStars[i].classList.remove('far');
+                allStars[i].classList.add('fas');
+            }
+
+            parent.dataset.score = score;
+        }
+        // Hàm hiển thị pop-up thông báo tùy chỉnh
+        function showStatusModal(isSuccess, message) {
+            const modal = document.getElementById("status-modal");
+            const icon = document.getElementById("status-icon");
+            const title = document.getElementById("status-title");
+            const msg = document.getElementById("status-message");
+            const closeBtn = modal.querySelector('button');
+
+            // Cập nhật nội dung và màu sắc dựa trên trạng thái (thành công/lỗi)
+            if (isSuccess) {
+                icon.innerHTML = '&#10003;'; // Dấu check
+                icon.className = 'text-green-500';
+                title.textContent = "Thành công!";
+            } else {
+                icon.innerHTML = '&#10007;'; // Dấu X
+                icon.className = 'text-red-500';
+                title.textContent = "Lỗi!";
+                closeBtn.classList.remove('bg-indigo-500', 'hover:bg-indigo-600');
+                closeBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+            }
+
+            msg.textContent = message;
+            modal.classList.remove("hidden");
+        }
+
+        // Hàm đóng pop-up thông báo
+        function closeStatusModal() {
+            document.getElementById("status-modal").classList.add("hidden");
+            // Tải lại trang sau khi người dùng đóng modal thành công
+            location.reload();
+        }
     </script>
 </body>
