@@ -4,6 +4,7 @@ using EXE202_StudentManagement.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EXE202_StudentManagement.Migrations
 {
     [DbContext(typeof(Exe202Context))]
-    partial class Exe202ContextModelSnapshot : ModelSnapshot
+    [Migration("20250918142311_Ver3")]
+    partial class Ver3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -207,15 +210,10 @@ namespace EXE202_StudentManagement.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("group_name");
 
-                    b.Property<string>("LeaderId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("GroupId")
                         .HasName("PK__Group__D57795A04383A0C3");
 
                     b.HasIndex("ClassId");
-
-                    b.HasIndex("LeaderId");
 
                     b.ToTable("Group", (string)null);
                 });
@@ -726,13 +724,7 @@ namespace EXE202_StudentManagement.Migrations
                         .HasForeignKey("ClassId")
                         .HasConstraintName("FK__Group__class_cou__5FB337D6");
 
-                    b.HasOne("EXE202_StudentManagement.Models.User", "Leader")
-                        .WithMany("Groups")
-                        .HasForeignKey("LeaderId");
-
                     b.Navigation("Class");
-
-                    b.Navigation("Leader");
                 });
 
             modelBuilder.Entity("EXE202_StudentManagement.Models.GroupTask", b =>
@@ -940,8 +932,6 @@ namespace EXE202_StudentManagement.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("GroupTasks");
-
-                    b.Navigation("Groups");
 
                     b.Navigation("PeerReviewReviewees");
 

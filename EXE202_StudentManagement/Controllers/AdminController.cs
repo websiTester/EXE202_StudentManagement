@@ -197,5 +197,13 @@ namespace EXE202_StudentManagement.Controllers
 			}
 			return RedirectToAction("ListUser", new { updateStatus = result });
 		}
+
+		[HttpPost]
+		public async Task<IActionResult> FilterUser(string username="")
+		{
+			List<User> users = await _userManager.Users
+				.Where(u => u.UserName.Contains(username)).ToListAsync();
+			return View("ListUser", users);
+		}
 	}
 }
