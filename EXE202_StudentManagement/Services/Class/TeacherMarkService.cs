@@ -54,8 +54,8 @@ namespace EXE202_StudentManagement.Services.Class
                         PeerReviews = reviews.Select(r => new PeerReviewViewModel
                         {
                             ReviewerId = r.ReviewerId,
-                            ReviewerName = _repository.GetUserFullName(r.ReviewerId),
-                            Score = r.Score,
+                            //ReviewerName = _repository.GetUserFullName(r.ReviewerId),
+                            //Score = r.Score,
                             Comment = r.Comment
                         }).ToList()
                     };
