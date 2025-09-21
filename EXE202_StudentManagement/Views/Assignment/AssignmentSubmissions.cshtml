@@ -1,0 +1,139 @@
+﻿@model EXE202_StudentManagement.ViewModels.AssignmentSubmissionsViewModel
+
+@{
+    Layout = "_TeacherLayout";
+    ViewData["Title"] = "Bài nộp - " + Model.AssignmentTitle;
+}
+
+<div class="container py-3">
+    <h2>@Model.AssignmentTitle</h2>
+    <p class="text-muted">Hạn nộp: @Model.Deadline?.ToString("dd/MM/yyyy")</p>
+
+    @if (Model.IsGroupAssignment)
+    {
+        <h4>Bài tập nhóm</h4>
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nhóm</th>
+                    <th>Thành viên</th>
+                    <th>Trạng thái</th>
+                    <th>Link bài nộp</th>
+                    <th>Ngày nộp</th>
+                    <th>Điểm</th>
+                    <th>Nhận xét</th>
+                    <th>Tải xuống</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var submission in Model.GroupSubmissions)
+                {
+                    <tr>
+                        <td>@submission.GroupName</td>
+                        <td>
+                            <ul class="mb-0">
+                                @foreach (var m in submission.Members)
+                                {
+                                    <li>@m.FullName</li>
+                                }
+                            </ul>
+                        </td>
+                        <td>
+                            @if (submission.SubmissionId != null)
+                            {
+                                <span class="badge bg-success">Đã nộp</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Chưa nộp</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(submission.SubmitLink))
+                            {
+                                <a href="@submission.SubmitLink" target="_blank">Xem</a>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                        <td>@(submission.SubmittedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                        <td>@(submission.TeacherGrade?.ToString() ?? "-")</td>
+                        <td>@(submission.TeacherComment ?? "-")</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(submission.SubmitLink))
+                            {
+                                <a asp-controller="Assignment"
+                                   asp-action="Download"
+                                   asp-route-submissionId="@submission.SubmissionId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fa fa-download"></i>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h4>Bài tập cá nhân</h4>
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Sinh viên</th>
+                    <th>Trạng thái</th>
+                    <th>Link bài nộp</th>
+                    <th>Ngày nộp</th>
+                    <th>Điểm</th>
+                    <th>Nhận xét</th>
+                    <th>Tải xuống</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var submission in Model.StudentSubmissions)
+                {
+                    <tr>
+                        <td>@submission.StudentName</td>
+                        <td>
+                            @if (submission.SubmissionId != null)
+                            {
+                                <span class="badge bg-success">Đã nộp</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Chưa nộp</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(submission.SubmitLink))
+                            {
+                                <a href="@submission.SubmitLink" target="_blank">Xem</a>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                        <td>@(submission.SubmittedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                        <td>@(submission.TeacherGrade?.ToString() ?? "-")</td>
+                        <td>@(submission.TeacherComment ?? "-")</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(submission.SubmitLink))
+                            {
+                                <a asp-controller="Assignment"
+                                   asp-action="Download"
+                                   asp-route-submissionId="@submission.SubmissionId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fa fa-download"></i>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

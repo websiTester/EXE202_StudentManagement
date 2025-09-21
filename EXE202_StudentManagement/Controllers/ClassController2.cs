@@ -81,4 +81,20 @@ public class ClassDetailController : Controller
         var classId = await _service.GetClassIdByGroupIdAsync(groupId);
         return RedirectToAction("Detail", new { id = classId });
     }
+
+    [HttpPost("leave-group")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LeaveGroup(int groupId)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var classId = await _service.GetClassIdByGroupIdAsync(groupId);
+        if (classId == null) return NotFound();
+
+        await _service.RemoveStudentFromGroupAsync(groupId, userId);
+
+        TempData["SuccessMessage"] = "Bạn đã rời khỏi nhóm!";
+        return RedirectToAction("Detail", new { id = classId });
+    }
 }

@@ -71,8 +71,17 @@
             <h4>Nhóm của tôi</h4>
             @if (Model.MyGroup != null)
             {
-                <div class="card mb-3">
-                    <div class="card-header">@Model.MyGroup.GroupName</div>
+                <div class="card mb-3 position-relative">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        @Model.MyGroup.GroupName
+                        <form asp-controller="ClassDetail" asp-action="LeaveGroup" method="post" class="ms-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="groupId" value="@Model.MyGroup.GroupId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Rời nhóm">
+                                <i class="fa fa-sign-out-alt"></i>
+                            </button>
+                        </form>
+                    </div>
                     <ul class="list-group list-group-flush">
                         @foreach (var m in Model.MyGroup.Members)
                         {
@@ -100,7 +109,11 @@
                                 }
                             </ul>
                             <div class="card-body">
-                                @if (g.IsMember)
+                                @if (Model.MyGroup != null)
+                                {
+                                    <button class="btn btn-sm btn-secondary" disabled>Đã có nhóm</button>
+                                }
+                                else if (g.IsMember)
                                 {
                                     <button class="btn btn-sm btn-secondary" disabled>Đã tham gia</button>
                                 }

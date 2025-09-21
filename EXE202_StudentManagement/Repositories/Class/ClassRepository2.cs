@@ -72,6 +72,17 @@ namespace EXE202_StudentManagement.Repositories.Class
                 .ToListAsync();
         }
 
+        public async Task RemoveStudentFromGroupAsync(int groupId, string studentId)
+        {
+            var studentGroup = await _context.StudentGroups
+                .FirstOrDefaultAsync(sg => sg.GroupId == groupId && sg.StudentId == studentId);
+
+            if (studentGroup != null)
+            {
+                _context.StudentGroups.Remove(studentGroup);
+            }
+        }
+
         // Lấy toàn bộ submissions của 1 Assignment
         public async Task<List<AssignmentSubmission>> GetSubmissionsByAssignmentAsync(int assignmentId)
         {

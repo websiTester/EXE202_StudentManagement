@@ -1,4 +1,8 @@
-﻿namespace EXE202_StudentManagement.ViewModels
+﻿using EXE202_StudentManagement.Models;
+using System;
+using System.Collections.Generic;
+
+namespace EXE202_StudentManagement.ViewModels
 {
     public class ClassDetailViewModel
     {
@@ -49,6 +53,23 @@
         public string? GroupName { get; set; }
         public List<StudentDto> Members { get; set; } = new();
         public bool IsMember { get; set; } = false;
+        public int Progress { get; set; } = 0;
+    }
+
+    public class GroupSubmissionDto
+    {
+        public int GroupId { get; set; }
+        public string GroupName { get; set; } = string.Empty;
+
+        // Thông tin bài nộp
+        public int? SubmissionId { get; set; }
+        public DateTime? SubmittedAt { get; set; }
+        public string? SubmitLink { get; set; }
+        public string? TeacherComment { get; set; }
+        public decimal? TeacherGrade { get; set; }
+
+        // Danh sách thành viên trong nhóm
+        public List<StudentDto> Members { get; set; } = new();
     }
 
     public class StudentDto

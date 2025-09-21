@@ -11,6 +11,7 @@ namespace EXE202_StudentManagement.Services.Interface
         Task AddGroupsAsync(List<Group> groups);
         Task RandomizeStudentsIntoGroups(int classId, List<Group> groups);
         Task AddStudentToGroupAsync(int groupId, string studentId);
+        Task RemoveStudentFromGroupAsync(int groupId, string studentId);
         Task<int?> GetClassIdByGroupIdAsync(int groupId);
     }
 }

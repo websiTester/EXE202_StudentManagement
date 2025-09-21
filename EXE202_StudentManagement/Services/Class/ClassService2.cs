@@ -37,20 +37,39 @@ namespace EXE202_StudentManagement.Services.Class
                         Title = a.Title,
                         Deadline = a.Deadline,
                         IsGroupAssignment = a.IsGroupAssignment ?? false,
-                        TotalSubmissions = a.AssignmentSubmissions.Count,   // sửa đúng
+                        TotalSubmissions = a.AssignmentSubmissions.Count,
                         TotalStudents = classEntity.StudentClasses.Count
                     }).ToList(),
-                    Groups = classEntity.Groups.Select(g => new GroupDto
+                    Groups = classEntity.Groups.Select(g =>
                     {
-                        GroupId = g.GroupId,
-                        GroupName = g.GroupName,
-                        Members = g.StudentGroups.Select(sg => new StudentDto
+                        // 🔹 Tính tiến độ nhóm: số bài tập nhóm đã nộp / tổng số bài tập nhóm
+                        var groupAssignments = classEntity.Assignments
+                            .Where(a => a.IsGroupAssignment == true)
+                            .ToList();
+
+                        int totalGroupAssignments = groupAssignments.Count;
+
+                        int submittedCount = groupAssignments.Count(a =>
+                            a.AssignmentSubmissions.Any(s =>
+                                g.StudentGroups.Any(sg => sg.StudentId == s.StudentId))
+                        );
+
+                        int progressPercent = totalGroupAssignments == 0 ? 0 :
+                            (int)Math.Round((double)submittedCount / totalGroupAssignments * 100);
+
+                        return new GroupDto
                         {
-                            UserId = sg.StudentId,
-                            FullName = sg.Student != null
-                                ? $"{sg.Student.FirstName} {sg.Student.LastName}"
-                                : "Unknown"
-                        }).ToList()
+                            GroupId = g.GroupId,
+                            GroupName = g.GroupName,
+                            Members = g.StudentGroups.Select(sg => new StudentDto
+                            {
+                                UserId = sg.StudentId,
+                                FullName = sg.Student != null
+                                    ? $"{sg.Student.FirstName} {sg.Student.LastName}"
+                                    : "Unknown"
+                            }).ToList(),
+                            Progress = progressPercent
+                        };
                     }).ToList(),
                     Students = classEntity.StudentClasses.Select(sc => new StudentDto
                     {
@@ -121,6 +140,7 @@ namespace EXE202_StudentManagement.Services.Class
             }
         }
 
+
         public async Task AddAssignmentAsync(Assignment assignment)
         {
             assignment.Id = 0;
@@ -145,7 +165,6 @@ namespace EXE202_StudentManagement.Services.Class
             foreach (var student in shuffled)
             {
                 var group = groups[i % groups.Count];
-                // User Id trong db là string
                 await _repo.AddStudentToGroupAsync(group.GroupId, student.Id);
                 i++;
             }
@@ -155,6 +174,12 @@ namespace EXE202_StudentManagement.Services.Class
         public async Task AddStudentToGroupAsync(int groupId, string studentId)
         {
             await _repo.AddStudentToGroupAsync(groupId, studentId);
+            await _repo.SaveChangesAsync();
+        }
+
+        public async Task RemoveStudentFromGroupAsync(int groupId, string studentId)
+        {
+            await _repo.RemoveStudentFromGroupAsync(groupId, studentId);
             await _repo.SaveChangesAsync();
         }
 

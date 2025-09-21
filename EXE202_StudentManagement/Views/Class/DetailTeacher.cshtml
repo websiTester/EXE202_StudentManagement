@@ -67,26 +67,38 @@
         <div class="tab-pane fade" id="groups" role="tabpanel">
             <div class="d-flex justify-content-between mb-2">
                 <h4>Nhóm</h4>
-                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+                <button class="btn btn-sm btn-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addGroupModal"
+                @(Model.Groups.Any() ? "disabled" : "")>
                     <i class="fa fa-plus"></i> Tạo nhóm
                 </button>
             </div>
 
-            <div class="row">
-                @foreach (var g in Model.Groups)
-                {
-                    <div class="col-md-4">
-                        <div class="card mb-3">
-                            <div class="card-header">@g.GroupName</div>
-                            <ul class="list-group list-group-flush">
-                                @foreach (var m in g.Members)
-                                {
-                                    <li class="list-group-item">@m.FullName</li>
-                                }
-                            </ul>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <a data-bs-toggle="collapse" href="#group-@g.GroupId" role="button" aria-expanded="false">
+                            @g.GroupName
+                        </a>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var m in g.Members)
+                        {
+                            <li class="list-group-item">@m.FullName</li>
+                        }
+                    </ul>
+                    <div class="collapse" id="group-@g.GroupId">
+                        <div class="card-body">
+                            <label>Tiến độ nhóm</label>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width:@g.Progress%">
+                                    @g.Progress%
+                                </div>
+                            </div>
                         </div>
                     </div>
-                }
+                </div>
             </div>
         </div>
     </div>

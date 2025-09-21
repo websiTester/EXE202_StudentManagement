@@ -11,6 +11,7 @@ namespace EXE202_StudentManagement.Repositories.Interface
         Task AddStudentToGroupAsync(int groupId, string studentId);
         Task<bool> ExistsStudentInGroupAsync(int groupId, string studentId);
         Task<List<User>> GetStudentsInClassAsync(int classId);
+        Task RemoveStudentFromGroupAsync(int groupId, string studentId);
 
         // service cần
         Task<List<AssignmentSubmission>> GetSubmissionsByAssignmentAsync(int assignmentId);
