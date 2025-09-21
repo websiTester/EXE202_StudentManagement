@@ -1,0 +1,122 @@
+﻿@model EXE202_StudentManagement.ViewModels.ClassDetailStudentViewModel
+
+@{
+    Layout = "_StudentLayout";
+    ViewData["Title"] = Model.ClassName ?? "Chi tiết lớp";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="container-fluid py-3">
+    <h1 class="h3">@Model.ClassName</h1>
+    <p class="text-muted">Giảng viên: @Model.TeacherName</p>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="studentTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments" type="button" role="tab">
+                Bài tập
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="groups-tab" data-bs-toggle="tab" data-bs-target="#groups" type="button" role="tab">
+                Nhóm
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="studentTabsContent">
+        <!-- Assignments -->
+        <div class="tab-pane fade show active" id="assignments" role="tabpanel">
+            <h4>Bài tập</h4>
+            @if (Model.Assignments.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var a in Model.Assignments)
+                    {
+                        <li class="list-group-item d-flex justify-content-between">
+                            <div>
+                                <strong>@a.Title</strong><br />
+                                <small class="text-muted">Hạn: @a.Deadline?.ToString("dd/MM/yyyy")</small>
+                            </div>
+                            <div>
+                                @if (a.IsSubmitted)
+                                {
+                                    <span class="badge bg-success">Đã nộp</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Chưa nộp</span>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div class="alert alert-info">Chưa có bài tập.</div>
+            }
+        </div>
+
+        <!-- Groups -->
+        <div class="tab-pane fade" id="groups" role="tabpanel">
+            <h4>Nhóm của tôi</h4>
+            @if (Model.MyGroup != null)
+            {
+                <div class="card mb-3">
+                    <div class="card-header">@Model.MyGroup.GroupName</div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var m in Model.MyGroup.Members)
+                        {
+                            <li class="list-group-item">@m.FullName</li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">Bạn chưa tham gia nhóm nào.</div>
+            }
+
+            <h4>Các nhóm hiện có</h4>
+            <div class="row">
+                @foreach (var g in Model.AvailableGroups)
+                {
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header">@g.GroupName</div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var m in g.Members)
+                                {
+                                    <li class="list-group-item">@m.FullName</li>
+                                }
+                            </ul>
+                            <div class="card-body">
+                                @if (g.IsMember)
+                                {
+                                    <button class="btn btn-sm btn-secondary" disabled>Đã tham gia</button>
+                                }
+                                else
+                                {
+                                    <form asp-controller="ClassDetail" asp-action="JoinGroup" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="groupId" value="@g.GroupId" />
+                                        <button type="submit" class="btn btn-sm btn-primary">Tham gia</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

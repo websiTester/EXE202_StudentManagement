@@ -1,0 +1,165 @@
+﻿@model EXE202_StudentManagement.ViewModels.ClassDetailTeacherViewModel
+
+@{
+    Layout = "_TeacherLayout";
+    ViewData["Title"] = Model.ClassName ?? "Chi tiết lớp";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="container-fluid py-3">
+    <h1 class="h3">@Model.ClassName</h1>
+    <p class="text-muted">Giảng viên: @Model.TeacherName</p>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="teacherTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments" type="button" role="tab">
+                Bài tập
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="groups-tab" data-bs-toggle="tab" data-bs-target="#groups" type="button" role="tab">
+                Nhóm
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="teacherTabsContent">
+        <!-- Assignments -->
+        <div class="tab-pane fade show active" id="assignments" role="tabpanel">
+            <div class="d-flex justify-content-between mb-2">
+                <h4>Bài tập đã giao</h4>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
+                    <i class="fa fa-plus"></i> Giao bài tập
+                </button>
+            </div>
+
+            @if (Model.Assignments.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var a in Model.Assignments)
+                    {
+                        <li class="list-group-item d-flex justify-content-between">
+                            <div>
+                                <strong>@a.Title</strong><br />
+                                <small class="text-muted">Hạn: @a.Deadline?.ToString("dd/MM/yyyy")</small>
+                            </div>
+                            <span class="badge bg-info">@a.TotalSubmissions / @a.TotalStudents đã nộp</span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div class="alert alert-info">Chưa có bài tập.</div>
+            }
+        </div>
+
+        <!-- Groups -->
+        <div class="tab-pane fade" id="groups" role="tabpanel">
+            <div class="d-flex justify-content-between mb-2">
+                <h4>Nhóm</h4>
+                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+                    <i class="fa fa-plus"></i> Tạo nhóm
+                </button>
+            </div>
+
+            <div class="row">
+                @foreach (var g in Model.Groups)
+                {
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header">@g.GroupName</div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var m in g.Members)
+                                {
+                                    <li class="list-group-item">@m.FullName</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add Assignment -->
+<div class="modal fade" id="addAssignmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form asp-controller="ClassDetail" asp-action="AddAssignment" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Giao bài tập mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="ClassId" value="@Model.ClassId" />
+                    <div class="mb-3">
+                        <label class="form-label">Tiêu đề</label>
+                        <input type="text" name="Title" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea name="Description" class="form-control"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hạn nộp</label>
+                            <input type="date" name="Deadline" class="form-control" />
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="IsGroupAssignment" value="true" />
+                                <label class="form-check-label">Bài tập nhóm</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Giao</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add Groups -->
+<div class="modal fade" id="addGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="ClassDetail" asp-action="AddGroups" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Phân chia nhóm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="classId" value="@Model.ClassId" />
+                    <div class="mb-3">
+                        <label class="form-label">Số nhóm</label>
+                        <input type="number" name="numberOfGroups" class="form-control" min="1" value="2" required />
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="randomize" value="true" />
+                        <label class="form-check-label">Xếp ngẫu nhiên</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success">Tạo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
