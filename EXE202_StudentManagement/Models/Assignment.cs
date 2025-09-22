@@ -28,4 +28,6 @@ public partial class Assignment
     public virtual ICollection<Material> Materials { get; set; } = new List<Material>();
 
     public virtual ICollection<PeerReview> PeerReviews { get; set; } = new List<PeerReview>();
+
+	public virtual ICollection<AssignmentGrade> AssignmentGrades { get; set; } = new List<AssignmentGrade>();
 }

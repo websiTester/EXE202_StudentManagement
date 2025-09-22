@@ -29,4 +29,7 @@ public partial class User : IdentityUser
     public virtual ICollection<StudentClass> StudentClasses { get; set; } = new List<StudentClass>();
 
     public virtual ICollection<StudentGroup> StudentGroups { get; set; } = new List<StudentGroup>();
+	public virtual ICollection<AssignmentGrade> StudentGrades { get; set; } = new List<AssignmentGrade>();
+
+	public virtual ICollection<AssignmentGrade> TeacherGrades { get; set; } = new List<AssignmentGrade>();
 }
