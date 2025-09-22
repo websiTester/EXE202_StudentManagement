@@ -8,6 +8,7 @@
 		public string? TeacherId { get; set; }
 		public float? Grade { get; set; }
 		public DateTime? GradedAt { get; set; }
+		public string? Comment { get; set; }
 		public virtual Assignment? Assignment { get; set; }
 		public virtual User? Student { get; set; }
 		public virtual User? Teacher { get; set; }
