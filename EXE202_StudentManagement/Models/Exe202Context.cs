@@ -38,6 +38,7 @@ public partial class Exe202Context : IdentityDbContext<User>
     public virtual DbSet<StudentClass> StudentClasses { get; set; }
 
     public virtual DbSet<StudentGroup> StudentGroups { get; set; }
+    public virtual DbSet<AssignmentGrade> AssignmentGrades { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
@@ -269,6 +270,15 @@ public partial class Exe202Context : IdentityDbContext<User>
                 .HasForeignKey(d => d.ClassId)
                 .HasConstraintName("FK__Notificat__class__02084FDA");
         });
+
+        modelBuilder.Entity<AssignmentGrade>(entity =>
+        {
+            entity.HasKey(e => e.AssignmentGradeId);
+            entity.HasOne(e => e.Assignment).WithMany(e => e.AssignmentGrades).HasForeignKey(e => e.AssignmentId);
+			entity.HasOne(e => e.Student).WithMany(e => e.StudentGrades).HasForeignKey(e => e.StudentId);
+			entity.HasOne(e => e.Teacher).WithMany(e => e.TeacherGrades).HasForeignKey(e => e.TeacherId);
+
+		});
 
         modelBuilder.Entity<PeerReview>(entity =>
         {
