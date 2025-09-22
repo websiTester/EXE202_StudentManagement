@@ -1,0 +1,209 @@
+﻿@model GradingViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Chấm điểm: " + Model.AssignmentName;
+}
+<!-- Tải Tailwind CSS cho giao diện -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Tải Font Awesome cho icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Thêm font Inter -->
+<style>
+    
+    body { font-family: 'Inter', sans-serif; }
+    .modal { transition: opacity 0.25s ease; }
+    .modal-content { transition: transform 0.25s ease; }
+</style>
+
+<div class="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header của trang -->
+        <div class="mb-6">
+            <a asp-action="Details" asp-controller="Assignments" asp-route-id="@Model.AssignmentId" class="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out text-sm">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách
+            </a>
+            <h1 class="text-3xl font-bold text-gray-900 mt-2">Chấm điểm: @Model.AssignmentName</h1>
+            <p class="text-lg text-gray-600">Nhóm: <span class="font-semibold">@Model.GroupName</span></p>
+        </div>
+
+        <!-- Hiển thị thông báo thành công hoặc lỗi -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md mb-6" role="alert">
+                <p class="font-bold">Thành công</p>
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
+        }
+        <div asp-validation-summary="ModelOnly" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-6"></div>
+
+
+        <form asp-action="SaveGrading" method="post" class="space-y-8">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="AssignmentId" />
+            <input type="hidden" asp-for="GroupId" />
+
+            <!-- Khu vực đánh giá chung -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Đánh giá chung cho cả nhóm</h2>
+                <div class="flex flex-col md:flex-row md:items-start gap-4">
+                    <div class="flex-shrink-0">
+                        <label asp-for="GroupGrade" class="block text-sm font-medium text-gray-700 mb-1">Điểm tổng</label>
+                        <input asp-for="GroupGrade" class="form-input w-full md:w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="VD: 8.5" />
+                        <span asp-validation-for="GroupGrade" class="text-red-600 text-sm"></span>
+                    </div>
+                    <div class="flex-grow">
+                        <label asp-for="GroupComment" class="block text-sm font-medium text-gray-700 mb-1">Nhận xét chung</label>
+                        <textarea asp-for="GroupComment" class="form-textarea w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" rows="3" placeholder="Nhận xét về bài làm, sự phối hợp của cả nhóm..."></textarea>
+                        <span asp-validation-for="GroupComment" class="text-red-600 text-sm"></span>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.SubmissionLink))
+                {
+                    <div class="mt-4">
+                        <a href="@Model.SubmissionLink" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <i class="fas fa-download mr-2"></i>
+                            Tải tài liệu bài nộp
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <!-- Khu vực đánh giá thành viên -->
+            <div class="space-y-6">
+                @for (int i = 0; i < Model.Members.Count; i++)
+                {
+                    var member = Model.Members[i];
+                    <input type="hidden" asp-for="Members[i].StudentId" />
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <h3 class="text-lg font-bold text-gray-900">@member.FullName</h3>
+                                    @if (member.IsLeader)
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-star mr-1.5"></i>Trưởng nhóm
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Đánh giá cá nhân -->
+                            <div class="mt-4 flex flex-col md:flex-row md:items-start gap-4">
+                                <div class="flex-shrink-0">
+                                    <label asp-for="Members[i].Grade" class="block text-sm font-medium text-gray-700 mb-1">Điểm</label>
+                                    <input asp-for="Members[i].Grade" class="form-input w-full md:w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Điểm TV" />
+                                </div>
+                                <div class="flex-grow">
+                                    <label asp-for="Members[i].Comment" class="block text-sm font-medium text-gray-700 mb-1">Nhận xét cá nhân</label>
+                                    <textarea asp-for="Members[i].Comment" class="form-textarea w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" rows="2" placeholder="Nhận xét về sự đóng góp của thành viên này..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Tiến độ công việc -->
+                            <div class="mt-6 border-t border-gray-200 pt-4">
+                                <h4 class="text-md font-semibold text-gray-700">Tiến độ công việc</h4>
+                                <div class="mt-2 flex items-center gap-6 text-sm">
+                                    <span class="text-red-600">Cần làm: <strong>@member.ToDoCount</strong></span>
+                                    <span class="text-blue-600">Đang làm: <strong>@member.DoingCount</strong></span>
+                                    <span class="text-green-600">Hoàn thành: <strong>@member.DoneCount</strong></span>
+                                    <button type="button" onclick="toggleModal('modal-@member.StudentId')" class="ml-auto text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                                        Xem chi tiết
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal chi tiết công việc cho từng thành viên -->
+                    <div id="modal-@member.StudentId" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0" onclick="if (event.target.id === 'modal-@member.StudentId') toggleModal('modal-@member.StudentId')">
+                        <div class="modal-content bg-white rounded-xl shadow-xl w-full max-w-2xl transform scale-95">
+                            <div class="p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold text-gray-800">Chi tiết công việc: @member.FullName</h3>
+                                    <button type="button" onclick="toggleModal('modal-@member.StudentId')" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                                        <i class="fas fa-times text-xl"></i>
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto p-1">
+                                    <!-- Cột To Do -->
+                                    <div>
+                                        <h4 class="font-semibold text-red-600 mb-2 p-2 bg-red-50 rounded-md">Cần làm (@member.Tasks.Count(t => t.Status == "To Do"))</h4>
+                                        <div class="space-y-2">
+                                            @foreach (var task in member.Tasks.Where(t => t.Status == "To Do"))
+                                            {
+                                                <div class="bg-gray-100 p-3 rounded-md text-sm">
+                                                    <p class="font-medium text-gray-800">@task.Title</p>
+                                                    <p class="text-gray-500">Point: @(task.Points.HasValue ? task.Points.Value.ToString() : "N/A")</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <!-- Cột Doing -->
+                                    <div>
+                                        <h4 class="font-semibold text-blue-600 mb-2 p-2 bg-blue-50 rounded-md">Đang làm (@member.Tasks.Count(t => t.Status == "Doing"))</h4>
+                                        <div class="space-y-2">
+                                            @foreach (var task in member.Tasks.Where(t => t.Status == "Doing"))
+                                            {
+                                                <div class="bg-gray-100 p-3 rounded-md text-sm">
+                                                    <p class="font-medium text-gray-800">@task.Title</p>
+                                                    <p class="text-gray-500">Point: @(task.Points.HasValue ? task.Points.Value.ToString() : "N/A")</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <!-- Cột Done -->
+                                    <div>
+                                        <h4 class="font-semibold text-green-600 mb-2 p-2 bg-green-50 rounded-md">Hoàn thành (@member.Tasks.Count(t => t.Status == "Done"))</h4>
+                                        <div class="space-y-2">
+                                            @foreach (var task in member.Tasks.Where(t => t.Status == "Done"))
+                                            {
+                                                <div class="bg-gray-100 p-3 rounded-md text-sm">
+                                                    <p class="font-medium text-gray-800">@task.Title</p>
+                                                    <p class="text-gray-500">Point: @(task.Points.HasValue ? task.Points.Value.ToString() : "N/A")</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Nút lưu -->
+            <div class="pt-5">
+                <div class="flex justify-end">
+                    <button type="submit" class="w-full sm:w-auto inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Lưu đánh giá
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleModal(modalID) {
+            const modal = document.getElementById(modalID);
+            const modalContent = modal.querySelector('.modal-content');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95');
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                modalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 250);
+            }
+        }
+    </script>
+}

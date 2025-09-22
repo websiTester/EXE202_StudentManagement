@@ -2,9 +2,8 @@
 {
     public class TaskViewModel
     {
-        public int TaskId { get; set; }
         public string Title { get; set; }
-        public string Status { get; set; }   // TODO / DOING / DONE
-        public int? Points { get; set; }
+        public string Status { get; set; } // Ví dụ: "To Do", "Doing", "Done"
+        public int? Points { get; set; } // Thêm thuộc tính Points
     }
 }

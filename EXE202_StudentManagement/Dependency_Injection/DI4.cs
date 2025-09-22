@@ -13,10 +13,8 @@ namespace EXE202_StudentManagement.Dependency_Injection
 
         public static IServiceCollection AddMyServices4(this IServiceCollection services)
         {
-            services.AddScoped<ITeacherMarkRepository, TeacherMarkRepository>();
-            services.AddScoped<ITeacherMarkService, TeacherMarkService>();
-            services.AddScoped<IAssignment2Repository, Assignment2Repository>();
-            services.AddScoped<IAssignment2Service, Assigment2Service>();
+            services.AddScoped<IGradingRepository, GradingRepository>();
+            services.AddScoped<IGradingService, GradingService>();
 
             return services;
         }
