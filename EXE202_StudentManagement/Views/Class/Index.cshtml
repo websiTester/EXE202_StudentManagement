@@ -57,12 +57,11 @@
                                 <h3 class="text-xl font-bold text-gray-800">@studentClass.Class.ClassName</h3>
                                 <p class="text-sm text-gray-600">Khóa học: @studentClass.Class.Course.Name</p>
                             </div>
-                            <i class="fas fa-chalkboard-teacher text-4xl text-indigo-500 ml-4"></i>
                         </div>
                         <div class="border-t border-gray-200 mt-4 pt-4 text-right">
                             <p class="text-sm text-gray-600 mb-2">Giáo viên: @studentClass.Class.Teacher?.FirstName @studentClass.Class.Teacher?.LastName</p>
                             <a href="/class/detail/@studentClass.Class.ClassId" class="inline-flex items-center text-sm font-medium text-indigo-500 hover:text-indigo-700 transition-colors duration-200">
-                                Chi tiết <i class="fas fa-arrow-right ml-2"></i>
+                                Chi tiết
                             </a>
                         </div>
                     </div>
@@ -161,7 +160,6 @@
             alertBox.innerHTML = `
                 <div class="flex flex-col items-center">
                     <div class="${colorClass} text-4xl mb-4">
-                        <i class="fas ${iconClass}"></i>
                     </div>
                     <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
                     <button onclick="this.parentElement.remove()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">Đóng</button>

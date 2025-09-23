@@ -72,8 +72,7 @@ namespace EXE202_StudentManagement.Controllers
         [Route("api/Assignment/CreateTask")]
         public IActionResult CreateTask([FromBody] GroupTask newTask)
         {
-            // Giờ bạn có thể truy cập newTask.AssignmentId và newTask.GroupId
-            // Các giá trị này được gửi từ form
+          
 
             _groupTaskService.AddGroupTask(newTask);
 
