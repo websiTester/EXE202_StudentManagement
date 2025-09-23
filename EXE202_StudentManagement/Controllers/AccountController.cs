@@ -76,7 +76,9 @@ namespace EXE202_StudentManagement.Controllers
 				User user = new User()
 				{
 					UserName = model.Username,
-					Email = model.Email
+					Email = model.Email,
+					FirstName = model.FirstName,
+					LastName = model.LastName
 				};
 				var result = await _userManager.CreateAsync(user, model.Password);
 

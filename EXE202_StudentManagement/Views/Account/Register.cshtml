@@ -38,6 +38,24 @@
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <div class="form-floating">
+                                        <input asp-for="FirstName" placeholder="Họ" type="text" name="FirstName" class="form-control" id="FirstName" maxlength="50">
+                                        <label asp-for="FirstName" for="FirstName">Họ</label>
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="LastName" placeholder="Tên" type="text" name="LastName" class="form-control" id="LastName" maxlength="50">
+                                        <label asp-for="LastName" for="LastName">Tên</label>
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input asp-for="Password" type="password" name="Password" class="form-control" id="Password" placeholder="Mật khẩu" maxlength="50">
                                         <label asp-for="Password" for="Password">Mật khẩu</label>
                                         <span asp-validation-for="Password" class="text-danger"></span>
@@ -75,15 +93,15 @@
 
                             <!-- Phân cách -->
                             <div class="divider my-4">
-                                <p class="text-muted">HOẶC</p>
+                                @* <p class="text-muted">HOẶC</p> *@
                             </div>
 
                             <!-- Nút đăng nhập Google ở giữa -->
-                            <div class="d-grid">
+                            <!-- <div class="d-grid">
                                 <a class="btn btn-danger btn-lg" href="" role="button">
                                     <i class="fab fa-google me-2"></i>Đăng nhập bằng Google
                                 </a>
-                            </div>
+                            </div> -->
                         </form>
 
                     </div>

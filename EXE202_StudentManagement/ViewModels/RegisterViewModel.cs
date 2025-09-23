@@ -21,6 +21,12 @@ namespace EXE202_StudentManagement.ViewModels
 		[Compare("Password", ErrorMessage = "Passwords and Confirm Password do not match")]
 		public string ConfirmPassword { get; set; }
 
+		[Required]
+		public string FirstName { get; set; }
+
+		[Required]
+		public string LastName { get; set; }
+
 		public string? Role { get; set; }
 	}
 }
