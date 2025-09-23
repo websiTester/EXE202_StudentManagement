@@ -1,5 +1,6 @@
 ﻿using EXE202_StudentManagement.Models;
 using EXE202_StudentManagement.Repositories.Interface;
+using EXE202_StudentManagement.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +10,16 @@ namespace EXE202_StudentManagement.Controllers
     {
         private RoleManager<IdentityRole> _roleManager;
         private UserManager<User> _userManager;
+        private readonly IStatisticsService _statisticsService;
         public UserController(RoleManager<IdentityRole> roleManager,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IStatisticsService statisticsService)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _statisticsService = statisticsService;
         }
-        
+        [Route("admin/detail/{id}")]
         public async Task<IActionResult> UserDetailAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -90,6 +94,21 @@ namespace EXE202_StudentManagement.Controllers
             }
 
             return View("UserDetail", user);
+        }
+        [Route("admin/dashboard")]
+        public IActionResult AdminDashboard()
+        {
+            try
+            {
+                // Gọi service đồng bộ
+                var statisticsViewModel = _statisticsService.GetDashboardStatistics();
+                return Ok(statisticsViewModel);
+            }
+            catch (Exception ex)
+            {
+                // Ghi lại lỗi (log the error)
+                return StatusCode(500, "Đã xảy ra lỗi máy chủ nội bộ.");
+            }
         }
     }
 }

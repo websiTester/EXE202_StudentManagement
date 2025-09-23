@@ -1,6 +1,7 @@
 ﻿using EXE202_StudentManagement.Models;
 using EXE202_StudentManagement.Repositories.Interface;
 using EXE202_StudentManagement.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace EXE202_StudentManagement.Repositories.Class
 {
@@ -23,7 +24,7 @@ namespace EXE202_StudentManagement.Repositories.Class
                 return null;
             }
 
-            var submission = _context.AssignmentSubmissions
+            var submission = _context.AssignmentSubmissions.Include(a =>a.Assignment)
                 .FirstOrDefault(s => s.AssignmentId == assignmentId && s.StudentId == group.LeaderId);
 
             var members = _context.StudentGroups
@@ -36,6 +37,7 @@ namespace EXE202_StudentManagement.Repositories.Class
                 GroupId = group.GroupId,
                 GroupName = group.GroupName,
                 AssignmentId = assignment.Id,
+                classId = (int)submission.Assignment.ClassId,
                 AssignmentName = assignment.Title,
                 SubmissionLink = submission?.SubmitLink,
                 GroupGrade = submission?.TeacherGrade,
@@ -71,50 +73,85 @@ namespace EXE202_StudentManagement.Repositories.Class
         /// <summary>
         /// Lưu điểm và nhận xét vào database bằng GradingViewModel (đồng bộ).
         /// </summary>
-        public void SaveGrading(GradingViewModel model)
+        public void SaveGroupGrade(GradingViewModel viewModel)
         {
-            // 1. Cập nhật điểm và nhận xét chung cho cả nhóm
-            var group = _context.Groups.Find(model.GroupId);
-            if (group == null) return;
+            // Lấy LeaderId từ GroupId
+            var leaderId = _context.Groups
+                .Where(g => g.GroupId == viewModel.GroupId)
+                .Select(g => g.LeaderId)
+                .FirstOrDefault();
 
+            if (string.IsNullOrEmpty(leaderId))
+            {
+                // Xử lý trường hợp không tìm thấy trưởng nhóm
+                return;
+            }
+
+            // Tìm bài nộp của trưởng nhóm
             var submission = _context.AssignmentSubmissions
-                .FirstOrDefault(s => s.AssignmentId == model.AssignmentId && s.StudentId == group.LeaderId);
+                .FirstOrDefault(s => s.AssignmentId == viewModel.AssignmentId && s.StudentId == leaderId);
 
             if (submission != null)
             {
-                submission.TeacherGrade = model.GroupGrade;
-                submission.TeacherComment = model.GroupComment;
-                _context.AssignmentSubmissions.Update(submission);
+                submission.TeacherGrade = viewModel.GroupGrade;
+                submission.TeacherComment = viewModel.GroupComment;
+                _context.SaveChanges();
+            }
+        }
+
+        // CẬP NHẬT: Thêm tham số teacherId và không dùng HttpContext
+        public void SaveMemberGrades(GradingViewModel viewModel, string teacherId)
+        {
+            if (string.IsNullOrEmpty(teacherId))
+            {
+                // Xử lý trường hợp không có teacherId, ví dụ: throw exception
+                return;
             }
 
-            // 2. Cập nhật điểm và nhận xét cho từng thành viên
-            foreach (var memberVM in model.Members)
+            foreach (var memberVM in viewModel.Members)
             {
-                var existingGrade = _context.AssignmentGrades
-                    .FirstOrDefault(ag => ag.StudentId == memberVM.StudentId && ag.AssignmentId == model.AssignmentId);
+                var gradeRecord = _context.AssignmentGrades
+                    .FirstOrDefault(g => g.AssignmentId == viewModel.AssignmentId && g.StudentId == memberVM.StudentId);
 
-                if (existingGrade != null)
+                if (gradeRecord != null) // Cập nhật nếu đã có
                 {
-                    existingGrade.Grade = (float?)memberVM.Grade;
-                    // existingGrade.Comment = memberVM.Comment; // Cần thêm cột Comment vào DB
-                    existingGrade.GradedAt = DateTime.UtcNow;
-                    _context.AssignmentGrades.Update(existingGrade);
+                    gradeRecord.Grade = (float?)memberVM.Grade;
+                    // gradeRecord.Comment = memberVM.Comment;
+                    gradeRecord.GradedAt = DateTime.Now;
                 }
-                else
+                else // Tạo mới nếu chưa có
                 {
                     var newGrade = new AssignmentGrade
                     {
-                        AssignmentId = model.AssignmentId,
+                        AssignmentId = viewModel.AssignmentId,
                         StudentId = memberVM.StudentId,
+                        TeacherId = teacherId,
                         Grade = (float?)memberVM.Grade,
-                        GradedAt = DateTime.UtcNow
-                        // Comment = memberVM.Comment
+                        // Comment = memberVM.Comment,
+                        GradedAt = DateTime.Now
                     };
                     _context.AssignmentGrades.Add(newGrade);
                 }
             }
-
             _context.SaveChanges();
         }
+        public AssignmentSubmission GetSubmissionLink(int assignmentId, int groupId)
+        {
+            var studentIdsInGroup = _context.StudentGroups
+                .Where(sg => sg.GroupId == groupId)
+                .Select(sg => sg.StudentId)
+                .ToList();
+
+            if (!studentIdsInGroup.Any())
+            {
+                return null;
+            }
+
+            var submission = _context.AssignmentSubmissions
+                .FirstOrDefault(s => s.AssignmentId == assignmentId && studentIdsInGroup.Contains(s.StudentId));
+
+            return submission;
+        }
+
     }
 }

@@ -15,7 +15,10 @@ namespace EXE202_StudentManagement.Dependency_Injection
         {
             services.AddScoped<IGradingRepository, GradingRepository>();
             services.AddScoped<IGradingService, GradingService>();
-
+            services.AddScoped<IAssignment2Repository, Assignment2Repository>();
+            services.AddScoped<IAssignment2Service, Assignment2Service>();
+            services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
             return services;
         }
 

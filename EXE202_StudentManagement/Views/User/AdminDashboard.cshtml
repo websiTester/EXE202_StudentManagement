@@ -1,0 +1,223 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout="_AdminLayout";
+}
+
+    <title>Trang Thống Kê - Viroom.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
+        }
+    </style>
+
+<!-- Main Content -->
+<main class="container mx-auto px-6 py-8">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Tổng quan</h2>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Total Users -->
+        <div class="stat-card bg-white bg-opacity-90 rounded-xl shadow-md p-6 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Tổng người dùng</p>
+                <p id="total-users" class="text-3xl font-bold text-gray-800">0</p>
+            </div>
+            <div class="bg-indigo-100 rounded-full p-3">
+                <i class="fas fa-users text-2xl text-indigo-500"></i>
+            </div>
+        </div>
+        <!-- Total Students & Teachers -->
+        <div class="stat-card bg-white bg-opacity-90 rounded-xl shadow-md p-6">
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-sm font-medium text-gray-500">Học sinh</p>
+                <div class="bg-blue-100 rounded-full p-2">
+                    <i class="fas fa-user-graduate text-xl text-blue-500"></i>
+                </div>
+            </div>
+            <p id="total-students" class="text-2xl font-bold text-gray-800 mb-3">0</p>
+            <div class="border-t border-gray-200 pt-3 mt-3 flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-500">Giáo viên</p>
+                <div class="bg-purple-100 rounded-full p-2">
+                    <i class="fas fa-chalkboard-teacher text-xl text-purple-500"></i>
+                </div>
+            </div>
+            <p id="total-teachers" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <!-- Total Visits -->
+        <div class="stat-card bg-white bg-opacity-90 rounded-xl shadow-md p-6 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Lượt truy cập</p>
+                <p id="total-visits" class="text-3xl font-bold text-gray-800">0</p>
+                <p id="visits-percentage" class="text-xs text-green-500 font-semibold">+0% so với tháng trước</p>
+            </div>
+            <div class="bg-green-100 rounded-full p-3">
+                <i class="fas fa-eye text-2xl text-green-500"></i>
+            </div>
+        </div>
+        <!-- Total Courses & Classes -->
+        <div class="stat-card bg-white bg-opacity-90 rounded-xl shadow-md p-6">
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-sm font-medium text-gray-500">Tổng khóa học</p>
+                <div class="bg-yellow-100 rounded-full p-2">
+                    <i class="fas fa-book-open text-xl text-yellow-500"></i>
+                </div>
+            </div>
+            <p id="total-courses" class="text-2xl font-bold text-gray-800 mb-3">0</p>
+            <div class="border-t border-gray-200 pt-3 mt-3 flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-500">Tổng lớp học</p>
+                <div class="bg-red-100 rounded-full p-2">
+                    <i class="fas fa-school text-xl text-red-500"></i>
+                </div>
+            </div>
+            <p id="total-classes" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        <!-- New Users Chart -->
+        <div class="bg-white bg-opacity-90 rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Người dùng mới (7 ngày qua)</h3>
+            <canvas id="usersChart"></canvas>
+        </div>
+        <!-- Revenue Chart -->
+        <div class="bg-white bg-opacity-90 rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Doanh thu (6 tháng qua)</h3>
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Biến để lưu trữ các instance của biểu đồ
+        let usersChartInstance = null;
+        let revenueChartInstance = null;
+
+        // Hàm để định dạng số lớn
+        const formatNumber = (num) => {
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num;
+        };
+
+        // Hàm fetch và cập nhật UI
+        function fetchStatistics() {
+            // URL này khớp với route trong StatisticsController.cs
+            fetch('/admin/dashboard')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateUI(data);
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải dữ liệu thống kê:", error);
+                    // Có thể hiển thị thông báo lỗi trên UI tại đây
+                });
+        }
+
+        // Hàm cập nhật giao diện
+        function updateUI(data) {
+            // Cập nhật thẻ thống kê
+            document.getElementById('total-users').textContent = formatNumber(data.totalUsers);
+            document.getElementById('total-students').textContent = formatNumber(data.totalStudents);
+            document.getElementById('total-teachers').textContent = formatNumber(data.totalTeachers);
+            document.getElementById('total-visits').textContent = formatNumber(data.totalVisits);
+            document.getElementById('total-courses').textContent = formatNumber(data.totalCourses);
+            document.getElementById('total-classes').textContent = formatNumber(data.totalClasses);
+
+            const percentageEl = document.getElementById('visits-percentage');
+            if (data.percentageChange >= 0) {
+                percentageEl.textContent = `+${data.percentageChange}% so với tháng trước`;
+                percentageEl.classList.remove('text-red-500');
+                percentageEl.classList.add('text-green-500');
+            } else {
+                percentageEl.textContent = `${data.percentageChange}% so với tháng trước`;
+                percentageEl.classList.remove('text-green-500');
+                percentageEl.classList.add('text-red-500');
+            }
+
+            // Cập nhật biểu đồ
+            renderUsersChart(data.newUsersChart);
+            renderRevenueChart(data.revenueChart);
+        }
+
+        // Hàm vẽ biểu đồ người dùng
+        function renderUsersChart(chartData) {
+            const ctx = document.getElementById('usersChart').getContext('2d');
+            if (usersChartInstance) {
+                usersChartInstance.destroy(); // Hủy biểu đồ cũ trước khi vẽ mới
+            }
+            usersChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Người dùng mới',
+                        data: chartData.data,
+                        borderColor: '#818cf8',
+                        backgroundColor: 'rgba(129, 140, 248, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#6366f1',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#6366f1',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                         y: { beginAtZero: true, grid: { display: false } },
+                         x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Hàm vẽ biểu đồ doanh thu
+        function renderRevenueChart(chartData) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+             if (revenueChartInstance) {
+                revenueChartInstance.destroy(); // Hủy biểu đồ cũ
+            }
+            revenueChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Doanh thu (triệu VND)',
+                        data: chartData.data,
+                        backgroundColor: ['#a5b4fc', '#818cf8', '#6366f1', '#4f46e5', '#4338ca', '#312e81'],
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                     plugins: { legend: { display: false } },
+                     scales: {
+                         y: { beginAtZero: true, grid: { color: '#e5e7eb' } },
+                         x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Gọi hàm fetch lần đầu khi trang được tải
+        fetchStatistics();
+    });
+</script>
+
