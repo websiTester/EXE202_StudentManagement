@@ -13,5 +13,6 @@ namespace EXE202_StudentManagement.Services.Interface
         Task AddStudentToGroupAsync(int groupId, string studentId);
         Task RemoveStudentFromGroupAsync(int groupId, string studentId);
         Task<int?> GetClassIdByGroupIdAsync(int groupId);
+        Task<List<Models.Class>> GetClassesForUserAsync(string userId);
     }
 }

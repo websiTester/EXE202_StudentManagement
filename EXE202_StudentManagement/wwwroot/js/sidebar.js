@@ -1,69 +1,28 @@
-﻿// wwwroot/js/sidebar.js
-document.addEventListener("DOMContentLoaded", function () {
+﻿// NỘI DUNG CUỐI CÙNG CHO sidebar.js
+document.addEventListener('DOMContentLoaded', function () {
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
     const body = document.body;
-    const sidebar = document.getElementById("sidebar");
-    const btn = document.getElementById("menuToggle");
-    const brand = document.getElementById("brandLink");
 
-    let pinned = false;
-
-    // Helper: set expanded based on pinned
-    function setExpanded(expand) {
-        if (expand) body.classList.add("sidebar-expanded");
-        else body.classList.remove("sidebar-expanded");
+    if (!menuToggle || !sidebarOverlay || !body) {
+        console.error("Missing required elements for sidebar functionality.");
+        return;
     }
 
-    // Toggle pinned (click menu)
-    btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        pinned = !pinned;
-        setExpanded(pinned);
+    // Sự kiện khi nhấn nút menu
+    menuToggle.addEventListener('click', function () {
+        body.classList.toggle('sidebar-expanded');
     });
 
-    // Hover behavior (temporary open when not pinned)
-    sidebar.addEventListener("mouseenter", () => {
-        if (!pinned) setExpanded(true);
-    });
-    sidebar.addEventListener("mouseleave", () => {
-        if (!pinned) setExpanded(false);
+    // Sự kiện khi nhấn vào vùng mờ (overlay) để đóng
+    sidebarOverlay.addEventListener('click', function () {
+        body.classList.remove('sidebar-expanded');
     });
 
-    // Click outside to close when not pinned
-    document.addEventListener("click", (e) => {
-        if (pinned) return; // pinned -> do nothing
-        if (!sidebar.contains(e.target) && e.target !== btn) {
-            setExpanded(false);
+    // Tùy chọn: Đóng sidebar khi nhấn phím Escape
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && body.classList.contains('sidebar-expanded')) {
+            body.classList.remove('sidebar-expanded');
         }
-    });
-
-    // brand click => home
-    if (brand) brand.addEventListener("click", (e) => {
-        // allow normal navigation if it's an <a>
-        // if you used a button, uncomment next line:
-        // window.location.href = '/Home/StudentHome';
-    });
-
-    // Active item: match pathname or data-page
-    const currentPath = window.location.pathname.toLowerCase();
-    document.querySelectorAll("#sidebar .nav-link").forEach(link => {
-        const href = (link.getAttribute("href") || "").toLowerCase();
-        const dataPage = link.getAttribute("data-page");
-        // if data-page provided, check that first
-        if (dataPage && dataPage.toLowerCase() === (window.viewActivePage || "").toLowerCase()) {
-            link.classList.add("active");
-            return;
-        }
-        if (href === "/" && (currentPath === "/" || currentPath === "/home" || currentPath === "/home/index")) {
-            link.classList.add("active");
-            return;
-        }
-        if (href !== "/" && currentPath.startsWith(href)) {
-            link.classList.add("active");
-        }
-    });
-
-    // keyboard: Esc closes when not pinned
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && !pinned) setExpanded(false);
     });
 });

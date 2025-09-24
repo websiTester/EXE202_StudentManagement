@@ -115,6 +115,21 @@ namespace EXE202_StudentManagement.Repositories.Class
             return await _context.StudentClasses.AnyAsync(sc => sc.StudentId == userId);
         }
 
+        public async Task<List<Models.Class>> GetClassesByTeacherAsync(string teacherId)
+        {
+            return await _context.Classes
+                .Where(c => c.TeacherId == teacherId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Models.Class>> GetClassesByStudentAsync(string studentId)
+        {
+            return await _context.StudentClasses
+                .Where(sc => sc.StudentId == studentId)
+                .Select(sc => sc.Class!)
+                .ToListAsync();
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

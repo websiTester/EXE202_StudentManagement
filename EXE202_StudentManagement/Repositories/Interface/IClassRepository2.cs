@@ -18,6 +18,10 @@ namespace EXE202_StudentManagement.Repositories.Interface
         Task<Group?> GetStudentGroupAsync(int classId, string studentId);
         Task<bool> IsUserTeacherInAnyClassAsync(string userId);
         Task<bool> IsUserStudentInAnyClassAsync(string userId);
+
+        // sidebar
+        Task<List<Models.Class>> GetClassesByTeacherAsync(string teacherId);
+        Task<List<Models.Class>> GetClassesByStudentAsync(string studentId);
         Task SaveChangesAsync();
     }
 }

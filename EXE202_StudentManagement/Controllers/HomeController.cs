@@ -4,7 +4,7 @@ using EXE202_StudentManagement.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("h")]
+
 public class HomeController : Controller
 {
     private readonly UserManager<User> _userManager;
@@ -16,10 +16,6 @@ public class HomeController : Controller
         _classRepo = classRepo;
     }
 
-    [HttpGet("")]
-    public IActionResult Index() => View();
-
-    [HttpGet("introduction")]
     public async Task<IActionResult> Introduction()
     {
         ViewData["ActivePage"] = "Introduction";

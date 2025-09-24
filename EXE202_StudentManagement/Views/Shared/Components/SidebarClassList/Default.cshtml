@@ -1,0 +1,14 @@
+﻿@model IEnumerable<EXE202_StudentManagement.Models.Class>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var cls in Model)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="/class/detail/@cls.ClassId">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span class="link-text">@cls.ClassName</span>
+            </a>
+        </li>
+    }
+}

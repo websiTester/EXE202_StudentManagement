@@ -1,8 +1,9 @@
-﻿:root {
-    --primary: #6d5cff; /* màu chủ đạo (tím/indigo) */
+﻿/* NỘI DUNG CUỐI CÙNG CHO layout.css */
+:root {
+    --primary: #6d5cff;
     --primary-dark: #4a3aff;
-    --bg-page: linear-gradient(90deg,#dfe6ff,#c7d2fe); /* nền trang */
-    --header-bg: #f3f2ff; /* nền header */
+    --bg-page: linear-gradient(90deg, #dfe6ff, #c7d2fe);
+    --header-bg: #f3f2ff;
 }
 
 /* reset & base */
@@ -15,7 +16,7 @@ body {
 
 /* header */
 header {
-    position: fixed; /* cố định header trên cùng */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -26,7 +27,7 @@ header {
     justify-content: space-between;
     padding: 0 20px;
     border-bottom: 1px solid rgba(0,0,0,0.06);
-    z-index: 1000;
+    z-index: 1001; /* Đảm bảo header luôn trên cùng */
     box-shadow: 0 1px 0 rgba(0,0,0,0.04);
 }
 
@@ -47,140 +48,97 @@ header {
 
 /* layout */
 .page-frame {
-    margin-top: 64px; /* đẩy nội dung xuống dưới header */
+    padding-top: 64px; /* Thay margin-top bằng padding-top */
     display: flex;
-    min-height: calc(100vh - 64px - 48px); /* trừ đi header và footer */
+    min-height: calc(100vh - 48px);
 }
 
-/* sidebar */
+/* Sidebar - Hoàn toàn ẩn mặc định */
 .sidebar {
-    width: 70px; /* vừa đủ cho icon */
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 220px;
+    height: calc(100vh - 64px);
     background: #ffffff;
     border-right: 1px solid rgba(0,0,0,0.05);
-    transition: width 260ms cubic-bezier(.2,.9,.2,1);
-    z-index: 900;
-    padding-top: 10px;
     box-shadow: 2px 0 8px rgba(0,0,0,0.02);
-    position: sticky;
-    top: 64px; /* bám ngay dưới header */
-    height: calc(100vh - 64px - 48px);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto; /* sửa: cho phép scroll khi nhiều lớp học */
+    overflow-y: auto;
+    padding-top: 10px;
+    z-index: 1000;
+    transform: translateX(-100%); /* Ẩn hoàn toàn ra bên trái */
+    transition: transform 260ms cubic-bezier(.2,.9,.2,1);
 }
 
-/* khi body có class "sidebar-expanded" thì mở rộng */
 body.sidebar-expanded .sidebar {
-    width: 220px;
+    transform: translateX(0); /* Hiện ra khi cần */
 }
 
 /* menu link */
-.sidebar .nav {
-    padding: 8px;
-}
-
 .sidebar .nav-link {
     display: flex;
     align-items: center;
-    justify-content: center; /* sửa: icon luôn căn giữa */
-    gap: 12px;
-    padding: 12px;
+    gap: 10px;
+    padding: 12px 14px;
     color: #333;
     border-radius: 8px;
-    transition: background .18s ease, color .18s ease, transform .18s ease;
-    margin: 6px 6px;
+    transition: background .18s ease, color .18s ease;
+    margin: 6px;
     text-decoration: none;
-    flex-shrink: 0; /* icon không bị méo khi sidebar dài */
 }
 
     .sidebar .nav-link i {
-        font-size: 22px; /* sửa: icon rõ hơn */
+        font-size: 20px;
+        width: 22px;
         text-align: center;
-        width: 28px;
     }
 
-/* khi sidebar mở rộng thì icon + text có spacing */
-body.sidebar-expanded .sidebar .nav-link {
-    justify-content: flex-start;
-    padding: 12px 14px;
-}
-
-    body.sidebar-expanded .sidebar .nav-link i {
-        margin-right: 8px;
+    .sidebar .nav-link:hover {
+        background: rgba(106, 90, 255, 0.08);
+        color: var(--primary-dark);
     }
 
-/* text của menu (ẩn khi sidebar thu gọn) */
-.sidebar .link-text {
-    display: inline-block;
-    transform-origin: left center;
-    transition: opacity .18s ease, transform .18s ease;
-    opacity: 0;
-    transform: translateX(-6px);
-    white-space: nowrap;
-}
+    .sidebar .nav-link.active {
+        background: var(--primary);
+        color: #fff !important;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(77,62,255,0.12);
+    }
 
-/* khi sidebar mở rộng thì hiện text */
-body.sidebar-expanded .sidebar .link-text {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-/* hover & active */
-.sidebar .nav-link:hover {
-    background: rgba(106, 90, 255, 0.08);
-    color: var(--primary-dark);
-}
-
-.sidebar .nav-link.active {
-    background: var(--primary);
-    color: #fff !important;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(77,62,255,0.12);
-}
-
-/* khi sidebar thu gọn: chỉ hiển thị icon, ẩn text */
-body:not(.sidebar-expanded) .sidebar .nav-link .link-text {
-    display: none;
-}
-
-/* khi active mà sidebar thu gọn: chỉ highlight icon (bo tròn) */
-body:not(.sidebar-expanded) .sidebar .nav-link.active {
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    margin: 8px auto;
-    justify-content: center;
-}
-
-/* content */
+/* Main Content - Luôn chiếm toàn bộ chiều rộng */
 .main-content {
     flex: 1;
     padding: 24px;
-    transition: margin-left 260ms cubic-bezier(.2,.9,.2,1);
-    margin-left: 70px; /* đồng bộ sidebar */
+    margin-left: 0; /* Quan trọng: Xóa bỏ mọi khoảng cách bên trái */
 }
 
-/* khi sidebar mở rộng thì đẩy content */
-body.sidebar-expanded .main-content {
-    margin-left: 220px;
-}
-
-/* wrapper nội dung giống card */
+/* content wrapper */
 .content-wrapper {
     max-width: 1180px;
     margin: 0 auto;
-    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+    background: #fff;
     border-radius: 12px;
     padding: 28px;
     box-shadow: 0 6px 20px rgba(16,24,40,0.06);
 }
 
-/* hero section tím nhạt */
-.page-hero {
-    background: linear-gradient(90deg, rgba(109,92,255,0.12), rgba(122,99,255,0.18));
-    border-radius: 10px;
-    padding: 28px;
-    margin-bottom: 20px;
+/* Lớp phủ (overlay) */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+body.sidebar-expanded .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* footer */
@@ -191,22 +149,4 @@ footer {
     align-items: center;
     justify-content: center;
     border-top: 1px solid rgba(0,0,0,0.04);
-    margin-top: 24px;
-}
-
-/* responsive */
-@media (max-width: 992px) {
-    /* trên mobile: sidebar overlay chứ không đẩy content */
-    body.sidebar-expanded .main-content {
-        margin-left: 70px;
-    }
-
-    .sidebar {
-        left: -260px;
-        position: fixed;
-    }
-
-    body.sidebar-expanded .sidebar {
-        left: 0;
-    }
 }

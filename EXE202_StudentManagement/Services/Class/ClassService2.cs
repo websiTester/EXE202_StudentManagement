@@ -194,5 +194,17 @@ namespace EXE202_StudentManagement.Services.Class
         {
             return _repo.GetClassIdByGroupIdAsync(groupId);
         }
+        public async Task<List<Models.Class>> GetClassesForUserAsync(string userId)
+        {
+            var isTeacher = await _repo.IsUserTeacherInAnyClassAsync(userId);
+
+            if (isTeacher)
+            {
+                return await _repo.GetClassesByTeacherAsync(userId);
+            }
+
+            return await _repo.GetClassesByStudentAsync(userId);
+        }
+
     }
 }
