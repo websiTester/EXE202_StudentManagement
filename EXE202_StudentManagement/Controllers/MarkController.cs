@@ -23,10 +23,10 @@ namespace EXE202_StudentManagement.Controllers
         [Route("mark/grading/{assignmentId}/{groupId}")]
         public IActionResult GradingPage(int groupId, int assignmentId)
         {
-            var viewModel = _gradingService.GetGradingDetails(assignmentId, groupId);
+            var viewModel = _gradingService.GetGradingDetails(groupId,assignmentId);
             if (viewModel == null)
             {
-                return NotFound(); // Hoặc trả về một trang lỗi thân thiện
+                return NotFound("Không tìm thấy thông tin cho bài tập hoặc nhóm được yêu cầu.");
             }
             return View(viewModel);
         }

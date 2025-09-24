@@ -17,53 +17,78 @@ namespace EXE202_StudentManagement.Repositories.Class
             var group = _context.Groups
                 .FirstOrDefault(g => g.GroupId == groupId);
 
-            var assignment = _context.Assignments.Find(assignmentId);
+            var assignment = _context.Assignments.FirstOrDefault( a => a.Id == assignmentId);
 
             if (group == null || assignment == null)
             {
                 return null;
             }
 
-            var submission = _context.AssignmentSubmissions.Include(a =>a.Assignment)
-                .FirstOrDefault(s => s.AssignmentId == assignmentId && s.StudentId == group.LeaderId);
-
-            var members = _context.StudentGroups
-                .Where(sg => sg.GroupId == groupId)
-                .Select(sg => sg.Student)
-                .ToList();
-
+            // Khởi tạo viewModel với các thông tin cơ bản
             var viewModel = new GradingViewModel
             {
-                GroupId = group.GroupId,
+                GroupId = groupId,
                 GroupName = group.GroupName,
-                AssignmentId = assignment.Id,
-                classId = (int)submission.Assignment.ClassId,
+                AssignmentId = assignmentId,
+                classId = assignment.ClassId ?? 0, // Đã thêm ClassId vào đây
                 AssignmentName = assignment.Title,
-                SubmissionLink = submission?.SubmitLink,
-                GroupGrade = submission?.TeacherGrade,
-                GroupComment = submission?.TeacherComment,
+                Members = new List<MemberGradingViewModel>() // Khởi tạo danh sách thành viên
             };
 
-            foreach (var member in members)
-            {
-                var memberGrade = _context.AssignmentGrades
-                    .FirstOrDefault(ag => ag.StudentId == member.Id && ag.AssignmentId == assignmentId);
+            var studentIdsInGroup = _context.StudentGroups
+                .Where(sg => sg.GroupId == groupId)
+                .Select(sg => sg.StudentId)
+                .ToList();
 
-                var tasks = _context.GroupTasks
-                    .Where(t => t.GroupId == groupId && t.AssignmentId == assignmentId && t.AssignedTo == member.Id)
-                    .ToList();
+            // Nếu không có sinh viên, trả về viewModel với thông tin cơ bản đã có
+            if (!studentIdsInGroup.Any())
+            {
+                return viewModel;
+            }
+
+            // Tìm kiếm bài nộp. Bước này là tùy chọn và sẽ không gây lỗi nếu không tìm thấy.
+            var submission = _context.AssignmentSubmissions
+                .FirstOrDefault(s => s.AssignmentId == assignmentId && studentIdsInGroup.Contains(s.StudentId));
+
+            // Nếu có bài nộp, cập nhật viewModel với thông tin từ bài nộp
+            if (submission != null)
+            {
+                viewModel.SubmissionLink = submission.SubmitLink;
+                viewModel.GroupGrade = submission.TeacherGrade;
+                viewModel.GroupComment = submission.TeacherComment;
+            }
+
+            // Tiếp tục lấy thông tin các thành viên và công việc như bình thường
+            var membersInfo = _context.Users
+                .Where(u => studentIdsInGroup.Contains(u.Id))
+                .ToList();
+
+            var allGradesForGroup = _context.AssignmentGrades
+                .Where(ag => ag.AssignmentId == assignmentId && studentIdsInGroup.Contains(ag.StudentId))
+                .ToList();
+
+            var allTasksForGroup = _context.GroupTasks
+                .Where(t => t.GroupId == groupId && t.AssignmentId == assignmentId)
+                .ToList();
+
+            foreach (var member in membersInfo)
+            {
+                var memberGrade = allGradesForGroup.FirstOrDefault(ag => ag.StudentId == member.Id);
+                var memberTasks = allTasksForGroup.Where(t => t.AssignedTo == member.Id).ToList();
 
                 viewModel.Members.Add(new MemberGradingViewModel
                 {
                     StudentId = member.Id,
                     FullName = $"{member.FirstName} {member.LastName}",
                     IsLeader = group.LeaderId == member.Id,
-                    Grade = (decimal?)memberGrade?.Grade,
-                    Comment = "", // **Lưu ý:** Bảng AssignmentGrades thiếu cột Comment
-                    Tasks = tasks.Select(t => new TaskViewModel { Title = t.Title, Status = t.Status, Points = t.Points }).ToList(),
-                    ToDoCount = tasks.Count(t => t.Status == "To Do"),
-                    DoingCount = tasks.Count(t => t.Status == "Doing"),
-                    DoneCount = tasks.Count(t => t.Status == "Done")
+                    Grade = (decimal?)(memberGrade?.Grade),
+                    Comment = memberGrade?.Comment,
+                    Tasks = memberTasks.Select(t => new TaskViewModel
+                    {
+                        Title = t.Title,
+                        Status = t.Status,
+                        Points = t.Points ?? 0
+                    }).ToList()
                 });
             }
 
@@ -75,28 +100,28 @@ namespace EXE202_StudentManagement.Repositories.Class
         /// </summary>
         public void SaveGroupGrade(GradingViewModel viewModel)
         {
-            // Lấy LeaderId từ GroupId
-            var leaderId = _context.Groups
-                .Where(g => g.GroupId == viewModel.GroupId)
-                .Select(g => g.LeaderId)
-                .FirstOrDefault();
+            var studentIdsInGroup = _context.StudentGroups
+            .Where(sg => sg.GroupId == viewModel.GroupId)
+            .Select(sg => sg.StudentId)
+            .ToList();
 
-            if (string.IsNullOrEmpty(leaderId))
+            if (!studentIdsInGroup.Any())
             {
-                // Xử lý trường hợp không tìm thấy trưởng nhóm
-                return;
+                return; // Không có thành viên để lưu điểm
             }
 
-            // Tìm bài nộp của trưởng nhóm
+            // Tìm bài nộp của bất kỳ thành viên nào trong nhóm
             var submission = _context.AssignmentSubmissions
-                .FirstOrDefault(s => s.AssignmentId == viewModel.AssignmentId && s.StudentId == leaderId);
+                .FirstOrDefault(s => s.AssignmentId == viewModel.AssignmentId && studentIdsInGroup.Contains(s.StudentId));
 
+            // Nếu có bài nộp, cập nhật nó
             if (submission != null)
             {
                 submission.TeacherGrade = viewModel.GroupGrade;
                 submission.TeacherComment = viewModel.GroupComment;
-                _context.SaveChanges();
             }
+            
+            _context.SaveChanges();
         }
 
         // CẬP NHẬT: Thêm tham số teacherId và không dùng HttpContext
