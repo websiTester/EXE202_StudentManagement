@@ -141,7 +141,7 @@ namespace EXE202_StudentManagement.Repositories.Class
                 if (gradeRecord != null) // Cập nhật nếu đã có
                 {
                     gradeRecord.Grade = (float?)memberVM.Grade;
-                    // gradeRecord.Comment = memberVM.Comment;
+                    gradeRecord.Comment = memberVM.Comment;
                     gradeRecord.GradedAt = DateTime.Now;
                 }
                 else // Tạo mới nếu chưa có
