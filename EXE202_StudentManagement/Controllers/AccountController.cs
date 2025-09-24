@@ -44,13 +44,16 @@ namespace EXE202_StudentManagement.Controllers
 				{
 					//User user = await _userManager.FindByNameAsync(model.Username);
 					//User user = await _userManager.GetUserAsync(User);
-					if (User.IsInRole("teacher"))
+					if (User.IsInRole("teacher") && !User.IsInRole("admin"))
 					{
 						return RedirectToAction("index", "TeacherClass");
 					}
-					else if (User.IsInRole("student"))
+					else if (User.IsInRole("student") && !User.IsInRole("admin"))
 					{
 						return RedirectToAction("index", "class");
+					} else if (User.IsInRole("admin"))
+					{
+						return RedirectToAction("ListUser", "Admin");
 					}
 					else
 					{

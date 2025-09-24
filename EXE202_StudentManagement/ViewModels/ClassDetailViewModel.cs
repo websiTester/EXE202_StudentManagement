@@ -45,6 +45,8 @@ namespace EXE202_StudentManagement.ViewModels
         public bool IsGroupAssignment { get; set; }
         public int TotalSubmissions { get; set; }
         public int TotalStudents { get; set; }
+
+        public List<GroupSubmissionStatusDto> Groups { get; set; } = new();
     }
 
     public class GroupDto
@@ -70,6 +72,12 @@ namespace EXE202_StudentManagement.ViewModels
 
         // Danh sách thành viên trong nhóm
         public List<StudentDto> Members { get; set; } = new();
+    }
+    public class GroupSubmissionStatusDto
+    {
+        public int GroupId { get; set; }
+        public string? GroupName { get; set; }
+        public bool HasSubmitted { get; set; }
     }
 
     public class StudentDto
