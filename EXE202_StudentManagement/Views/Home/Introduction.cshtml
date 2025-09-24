@@ -1,4 +1,5 @@
-﻿@{
+﻿@model EXE202_StudentManagement.ViewModels.IntroductionViewModel
+@{
     Layout = "_HomeLayout";
     ViewData["Title"] = "Introduction";
 }
@@ -8,14 +9,32 @@
     <div class="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
         <div class="text-center text-lg-start">
             <h1 class="display-4 fw-bold">Chào mừng đến với <span class="text-warning">Viroom</span></h1>
-            <p class="lead mt-3">
-                Nền tảng học tập trực tuyến hiện đại, giúp bạn kết nối và học tập mọi lúc mọi nơi.
-            </p>
+            <p class="lead mt-3">Nền tảng học tập trực tuyến hiện đại, giúp bạn kết nối và học tập mọi lúc mọi nơi.</p>
+
             <div class="mt-4">
-                <a href="/Account/Register" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay</a>
-                <a href="/Account/Login" class="btn btn-outline-light btn-lg rounded-pill">Đăng nhập</a>
+                @if (Model.IsAuthenticated)
+                {
+                    if (Model.IsTeacher)
+                    {
+                        <a href="/teacher/class/home" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay (Giáo viên)</a>
+                    }
+                    else if (Model.IsStudent)
+                    {
+                        <a href="/class/index" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay (Học sinh)</a>
+                    }
+                    else
+                    {
+                        <a href="/user/home" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay</a>
+                    }
+                }
+                else
+                {
+                    <a href="/account/selectrolebeforelogin" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay</a>
+                    <a href="/account/login" class="btn btn-outline-light btn-lg rounded-pill">Đăng nhập</a>
+                }
             </div>
         </div>
+
         <div class="mt-4 mt-lg-0">
             <img src="~/img/class-image.jpg" alt="Learning Online" class="img-fluid" style="max-width: 450px;">
         </div>
@@ -61,7 +80,23 @@
 <!-- CTA Section -->
 <section class="py-5 text-center text-white" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
     <div class="container">
-        <h2 class="fw-bold mb-3">Sẵn sàng bắt đầu hành trình học tập cùng Viroom?</h2>
-        <a href="/Account/Register" class="btn btn-light btn-lg rounded-pill shadow">Đăng ký ngay</a>
+        @if (Model.IsAuthenticated)
+        {
+            <h2 class="fw-bold mb-3">Chào mừng trở lại, @Model.UserName!</h2>
+
+            @if (Model.IsTeacher)
+            {
+                <a href="/teacher/class/home" class="btn btn-light btn-lg rounded-pill shadow">Bắt đầu ngay (Giáo viên)</a>
+            }
+            else
+            {
+                <a href="/class/index" class="btn btn-light btn-lg rounded-pill shadow">Bắt đầu ngay (Học sinh)</a>
+            }
+        }
+        else
+        {
+            <h2 class="fw-bold mb-3">Sẵn sàng bắt đầu hành trình học tập cùng Viroom?</h2>
+            <a href="/account/selectrolebeforelogin" class="btn btn-light btn-lg rounded-pill shadow">Đăng ký ngay</a>
+        }
     </div>
 </section>

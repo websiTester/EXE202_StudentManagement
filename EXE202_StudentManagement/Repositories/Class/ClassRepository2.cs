@@ -103,6 +103,18 @@ namespace EXE202_StudentManagement.Repositories.Class
                     g.StudentGroups.Any(sg => sg.StudentId == studentId));
         }
 
+        public async Task<bool> IsUserTeacherInAnyClassAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId)) return false;
+            return await _context.Classes.AnyAsync(c => c.TeacherId == userId);
+        }
+
+        public async Task<bool> IsUserStudentInAnyClassAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId)) return false;
+            return await _context.StudentClasses.AnyAsync(sc => sc.StudentId == userId);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

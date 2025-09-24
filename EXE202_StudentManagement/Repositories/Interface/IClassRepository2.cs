@@ -16,7 +16,8 @@ namespace EXE202_StudentManagement.Repositories.Interface
         // service cần
         Task<List<AssignmentSubmission>> GetSubmissionsByAssignmentAsync(int assignmentId);
         Task<Group?> GetStudentGroupAsync(int classId, string studentId);
-
+        Task<bool> IsUserTeacherInAnyClassAsync(string userId);
+        Task<bool> IsUserStudentInAnyClassAsync(string userId);
         Task SaveChangesAsync();
     }
 }

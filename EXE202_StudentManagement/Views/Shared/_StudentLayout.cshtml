@@ -5,7 +5,8 @@
 @{
     Layout = null;
     var user = await UserManager.GetUserAsync(User);
-    var userName = user?.UserName ?? "User";
+    var userName = user?.UserName ?? " ";
+    var name = user?.FirstName ?? " ";
 }
 
 <!DOCTYPE html>
@@ -29,7 +30,7 @@
         </div>
 
         <div class="d-flex align-items-center">
-            <div class="me-2">Xin chào, @userName</div>
+            <div class="me-2">Xin chào, @name</div>
             <div class="dropdown">
                 <a class="btn btn-light dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-user"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end">
