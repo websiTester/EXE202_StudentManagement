@@ -27,9 +27,7 @@
 
             <!-- Header của trang -->
             <div class="mb-6">
-                <a asp-controller="Mark"
-                asp-action="AssignmentList"
-                asp-route-classId="@Model.classId"
+                <a href="/class/detail/@Model.classId"
                 class="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out text-sm">
                     <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách
                 </a>
