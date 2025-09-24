@@ -5,15 +5,6 @@
     ViewData["Title"] = Model.ClassName ?? "Chi tiết lớp";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-}
-
 <div class="container-fluid py-3">
     <h1 class="h3">@Model.ClassName</h1>
     <p class="text-muted">Giảng viên: @Model.TeacherName</p>
@@ -44,18 +35,35 @@
 
             @if (Model.Assignments.Any())
             {
-                <ul class="list-group">
+                <div class="row">
                     @foreach (var a in Model.Assignments)
                     {
-                        <li class="list-group-item d-flex justify-content-between">
-                            <div>
-                                <strong>@a.Title</strong><br />
-                                <small class="text-muted">Hạn: @a.Deadline?.ToString("dd/MM/yyyy")</small>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card shadow-sm">
+                                <!-- Click card để toggle dropdown -->
+                                <div class="card-body" data-bs-toggle="collapse" data-bs-target="#assignment-@a.Id" role="button" aria-expanded="false">
+                                    <h5 class="card-title">@a.Title</h5>
+                                    <p class="text-muted">Hạn: @a.Deadline?.ToString("dd/MM/yyyy")</p>
+                                    <span class="badge bg-info">
+                                        Bài của nhóm: @a.TotalSubmissions / @Model.Groups.Count đã nộp
+                                    </span>
+                                </div>
+
+                                <!-- Collapse nhóm -->
+                                <div id="assignment-@a.Id" class="collapse">
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var group in a.Groups)
+                                        {
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <a href="/mark/grading/@a.Id/@group.GroupId">@group.GroupName</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
                             </div>
-                            <span class="badge bg-info">@a.TotalSubmissions / @a.TotalStudents đã nộp</span>
-                        </li>
+                        </div>
                     }
-                </ul>
+                </div>
             }
             else
             {
@@ -63,48 +71,49 @@
             }
         </div>
 
+
         <!-- Groups -->
         <div class="tab-pane fade" id="groups" role="tabpanel">
             <div class="d-flex justify-content-between mb-2">
                 <h4>Nhóm</h4>
-                <button class="btn btn-sm btn-success"
-                        data-bs-toggle="modal"
-                        data-bs-target="#addGroupModal"
-                @(Model.Groups.Any() ? "disabled" : "")>
-                    <i class="fa fa-plus"></i> Tạo nhóm
-                </button>
-            </div>
-
-            <div class="row">
-                @foreach (var g in Model.Groups)
+                @if (!Model.Groups.Any())
                 {
-                    <div class="col-md-4">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <a data-bs-toggle="collapse" href="#group-@g.GroupId" role="button" aria-expanded="false">
-                                    @g.GroupName
-                                </a>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                @foreach (var m in g.Members)
-                                {
-                                    <li class="list-group-item">@m.FullName</li>
-                                }
-                            </ul>
-                            <div class="collapse" id="group-@g.GroupId">
-                                <div class="card-body">
-                                    <label>Tiến độ nhóm</label>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width:@g.Progress%">
-                                            @g.Progress%
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+                        <i class="fa fa-plus"></i> Tạo nhóm
+                    </button>
                 }
             </div>
+
+            @if (Model.Groups.Any())
+            {
+                <div class="row">
+                    @foreach (var g in Model.Groups)
+                    {
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-header">@g.GroupName</div>
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var m in g.Members)
+                                    {
+                                        <li class="list-group-item">@m.FullName</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">Chưa có nhóm. Vui lòng tạo nhóm.</div>
+                <h5>Danh sách sinh viên:</h5>
+                <ul class="list-group">
+                    @foreach (var s in Model.Students)
+                    {
+                        <li class="list-group-item">@s.FullName</li>
+                    }
+                </ul>
+            }
         </div>
     </div>
 </div>
@@ -136,7 +145,7 @@
                         </div>
                         <div class="col-md-6 d-flex align-items-center">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="IsGroupAssignment" value="true" />
+                                <input class="form-check-input" type="checkbox" name="IsGroupAssignment" value="true" checked disabled />
                                 <label class="form-check-label">Bài tập nhóm</label>
                             </div>
                         </div>

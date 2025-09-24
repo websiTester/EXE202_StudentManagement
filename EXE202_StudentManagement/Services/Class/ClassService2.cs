@@ -38,11 +38,17 @@ namespace EXE202_StudentManagement.Services.Class
                         Deadline = a.Deadline,
                         IsGroupAssignment = a.IsGroupAssignment ?? false,
                         TotalSubmissions = a.AssignmentSubmissions.Count,
-                        TotalStudents = classEntity.StudentClasses.Count
+                        TotalStudents = classEntity.StudentClasses.Count,
+                        Groups = classEntity.Groups.Select(g => new GroupSubmissionStatusDto
+                        {
+                            GroupId = g.GroupId,
+                            GroupName = g.GroupName,
+                            HasSubmitted = a.AssignmentSubmissions
+                                .Any(s => g.StudentGroups.Any(sg => sg.StudentId == s.StudentId))
+                        }).ToList()
                     }).ToList(),
                     Groups = classEntity.Groups.Select(g =>
                     {
-                        // 🔹 Tính tiến độ nhóm: số bài tập nhóm đã nộp / tổng số bài tập nhóm
                         var groupAssignments = classEntity.Assignments
                             .Where(a => a.IsGroupAssignment == true)
                             .ToList();
@@ -139,6 +145,7 @@ namespace EXE202_StudentManagement.Services.Class
                 return vm;
             }
         }
+
 
 
         public async Task AddAssignmentAsync(Assignment assignment)
