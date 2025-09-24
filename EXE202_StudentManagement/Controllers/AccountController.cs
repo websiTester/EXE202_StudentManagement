@@ -44,7 +44,21 @@ namespace EXE202_StudentManagement.Controllers
 				{
 					//User user = await _userManager.FindByNameAsync(model.Username);
 					//User user = await _userManager.GetUserAsync(User);
-					return View("Index");
+					if (User.IsInRole("teacher") && !User.IsInRole("admin"))
+					{
+						return RedirectToAction("index", "TeacherClass");
+					}
+					else if (User.IsInRole("student") && !User.IsInRole("admin"))
+					{
+						return RedirectToAction("index", "class");
+					} else if (User.IsInRole("admin"))
+					{
+						return RedirectToAction("ListUser", "Admin");
+					}
+					else
+					{
+						return RedirectToAction("Introduction", "Home");
+					}
 				}
 				else
 				{		
@@ -87,7 +101,7 @@ namespace EXE202_StudentManagement.Controllers
 					ViewBag.ErrorTitle = "Registration successful";
 					await _userManager.AddToRoleAsync(user, model.Role);
 					
-					return View("RegisterSuccess");
+					return View("Login");
 				}
 				else
 				{
