@@ -54,7 +54,7 @@ app.UseSession();
 
 app.MapControllerRoute(
 				name: "default",
-				pattern: "{controller=class}/{action=index}"
+				pattern: "{controller=home}/{action=introduction}"
 );
 
 app.Run();
