@@ -36,7 +36,7 @@ namespace EXE202_StudentManagement.Controllers
 			{
 				IdentityRole role = new IdentityRole()
 				{
-					Name = model.RoleName
+					Name = model.RoleName.ToLower()
 				};
 				IdentityResult result = await _roleManager.CreateAsync(role);
 				if (result.Succeeded)
@@ -92,7 +92,7 @@ namespace EXE202_StudentManagement.Controllers
 			IdentityRole role = await _roleManager.FindByIdAsync(model.Id);
 			if (role != null)
 			{
-				role.Name = model.RoleName;
+				role.Name = model.RoleName.ToLower();
 				var result = await _roleManager.UpdateAsync(role);
 
 
