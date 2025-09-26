@@ -117,9 +117,9 @@ namespace EXE202_StudentManagement.Controllers
             {
                 return Unauthorized(new { success = false, message = "Người dùng chưa đăng nhập." });
             }
-
+            var assignment=_assignmentService.GetAssignmentById(assignmentId);
             // Lấy thông tin nhóm của người dùng
-            var myGroup = _groupService.GetGroupByMemberId(user.Id);
+            var myGroup = _groupService.GetGroupByMemberId(user.Id,assignment.ClassId);
             if (myGroup == null)
             {
                 return BadRequest(new { success = false, message = "Bạn chưa thuộc nhóm nào." });
@@ -200,8 +200,8 @@ namespace EXE202_StudentManagement.Controllers
             {
                 return Unauthorized(new { success = false, message = "Người dùng chưa đăng nhập." });
             }
-
-            var myGroup = _groupService.GetGroupByMemberId(user.Id);
+            var assignment=_assignmentService.GetAssignmentById(model.AssignmentId);
+            var myGroup = _groupService.GetGroupByMemberId(user.Id,assignment.ClassId);
             if (myGroup == null)
             {
                 return BadRequest(new { success = false, message = "Bạn chưa thuộc nhóm nào." });
@@ -252,8 +252,8 @@ namespace EXE202_StudentManagement.Controllers
             {
                 return Unauthorized(new { success = false, message = "Người dùng chưa đăng nhập." });
             }
-
-            var myGroup = _groupService.GetGroupByMemberId(user.Id);
+            var assignment = _assignmentService.GetAssignmentById(assignmentId);
+            var myGroup = _groupService.GetGroupByMemberId(user.Id,assignment.ClassId);
             if (myGroup == null)
             {
                 return BadRequest(new { success = false, message = "Bạn chưa thuộc nhóm nào." });
