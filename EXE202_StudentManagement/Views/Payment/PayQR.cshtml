@@ -1,13 +1,10 @@
 ﻿@model PaymentServiceViewModel
 @using System.Globalization
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh Toán - Viroom.com</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+@{
+    Layout = "_PaymentLayout";
+}
+@section Styles{
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -23,8 +20,7 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         }
     </style>
-</head>
-<body>
+}
 
     <div class="container payment-container">
         <div class="row">
@@ -48,10 +44,13 @@
                         <span class="fw-bold text-primary me-2">3.</span> Quét mã QR ở bên phải.
                     </li>
                     <li class="list-group-item">
-                        <span class="fw-bold text-primary me-2">4.</span> Đảm bảo nội dung chuyển khoản là "@Model.Username chuyen khoan goi thang Virroom" để hệ thống tự động xác nhận.
+                    <span class="fw-bold text-primary me-2">4.</span> Đảm bảo nội dung chuyển khoản là <strong>"@(Model.Username)_Virroom_@(Model.Description)"</strong> để nhân viên xác nhận chính xác giao dịch.
                     </li>
                     <li class="list-group-item">
-                        <span class="fw-bold text-primary me-2">5.</span> Hoàn tất giao dịch. Hệ thống sẽ tự động nâng cấp tài khoản của bạn.
+                        <span class="fw-bold text-primary me-2">5.</span> Hoàn tất giao dịch. Gửi hóa đơn thanh toán vào đoạn chat tại góc dưới bên phải màn hình.
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold text-primary me-2">6.</span> Trong vòng 24h, nhân viên sẽ phản hồi và cập nhập trạng thái tài khoản của khách hàng.
                     </li>
                 </ul>
             </div>
@@ -73,7 +72,7 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@section Scripts{
+    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script> *@
+}
+    

@@ -1,0 +1,92 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
+
+@{
+    Layout = null;
+    var user = await UserManager.GetUserAsync(User);
+    var name = user?.FirstName ?? " ";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Viroom (Giáo viên)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/layout.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header>
+        <div class="d-flex align-items-center">
+            <button id="menuToggle" class="btn btn-light me-2"><i class="fas fa-bars"></i></button>
+            <a id="brandLink" class="brand" href="/teacher/class/home">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>VIROOM</span>
+            </a>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="me-2">Xin chào, @name</div>
+            <div class="dropdown">
+                <a class="btn btn-light dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-user"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#">Hồ sơ</a></li>
+                    <li>
+                        <form method="post" asp-controller="Account" asp-action="Logout">
+                            <button type="submit" class="dropdown-item">Đăng xuất</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-frame">
+        <nav id="sidebar" class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/teacher/class/home">
+                        <i class="fas fa-home"></i>
+                        <span class="link-text">Trang chủ</span>
+                    </a>
+                </li>
+
+                @await Component.InvokeAsync("SidebarClassList")
+
+            </ul>
+        </nav>
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <main role="main" class="main-content">
+            <div class="content-wrapper">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        © 2025 Viroom. All rights reserved.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/sidebar.js"></script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/68ce6704fce9651920a06920/1j5j44ql8';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

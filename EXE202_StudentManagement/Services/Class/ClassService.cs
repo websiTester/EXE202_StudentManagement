@@ -22,10 +22,10 @@ namespace EXE202_StudentManagement.Services.Class
             int courseId = newClassModel.ExistingCourseId ?? 0;
             if (newClassModel.IsNewCourse && !string.IsNullOrEmpty(newClassModel.NewCourseName))
             {
-                if (_courseRepository.IsCourseNameExist(newClassModel.NewCourseName))
-                {
-                    return (false, "Tên khóa học đã tồn tại.");
-                }
+                //if (_courseRepository.IsCourseNameExist(newClassModel.NewCourseName))
+                //{
+                //    return (false, "Tên khóa học đã tồn tại.");
+                //}
                 var newCourse = new Course
                 {
                     Name = newClassModel.NewCourseName,

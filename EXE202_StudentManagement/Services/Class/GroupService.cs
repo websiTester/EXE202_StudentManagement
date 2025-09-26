@@ -13,9 +13,9 @@ namespace EXE202_StudentManagement.Services.Class
             _groupRepository = groupRepository;
         }
 
-        public Group GetGroupByMemberId(string memberId)
+        public Group GetGroupByMemberId(string memberId, int? classId)
         {
-            return _groupRepository.GetGroupByMemberId(memberId);
+            return _groupRepository.GetGroupByMemberId(memberId, classId);
         }
     }
 }

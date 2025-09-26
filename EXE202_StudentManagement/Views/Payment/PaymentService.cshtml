@@ -1,56 +1,51 @@
 ﻿@model PaymentServiceViewModel
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gói Dịch Vụ - Viroom.com</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8f9fa;
+@{
+    Layout = "_PaymentLayout";
+}
+@section Styles{
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f8f9fa;
+    }
+
+    .header-section {
+        background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
+        color: white;
+        padding: 50px 0;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .pricing-card {
+        border-radius: 1rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .header-section {
-            background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
-            color: white;
-            padding: 50px 0;
-            border-radius: 0 0 20px 20px;
-        }
+    .pricing-header {
+        background: #f1f5f9;
+        padding: 2rem;
+    }
 
-        .pricing-card {
-            border-radius: 1rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden;
-        }
+    .pricing-body ul li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
 
-            .pricing-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            }
-
-        .pricing-header {
-            background: #f1f5f9;
-            padding: 2rem;
-        }
-
-        .pricing-body ul li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .pricing-badge {
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-    </style>
-</head>
-<body>
+    .pricing-badge {
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+</style>
+}
     <!-- Header Section -->
     <div class="header-section text-center mb-5">
         <h1 class="display-5 fw-bold">Chọn Gói Dịch Vụ Phù Hợp</h1>
@@ -138,8 +133,8 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+@section Scripts{
+    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script> *@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Tinh toan so tien tiet kiem
@@ -152,5 +147,5 @@
             document.getElementById('savings-amount').textContent = `${savingsPercent}%`;
         });
     </script>
-</body>
-</html>
+}
+    
