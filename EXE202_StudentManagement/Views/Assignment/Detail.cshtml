@@ -425,7 +425,7 @@
             const todoCount = tasksData.filter(t => t.status === "todo").length;
             const doingCount = tasksData.filter(t => t.status === "doing").length;
             const doneCount = tasksData.filter(t => t.status === "done").length;
-
+            
             const ctx = document.getElementById("progress-chart").getContext("2d");
             if (progressChart) {
                 progressChart.data.datasets[0].data = [todoCount, doingCount, doneCount];
