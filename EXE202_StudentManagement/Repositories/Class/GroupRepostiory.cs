@@ -13,12 +13,12 @@ namespace EXE202_StudentManagement.Repositories.Class
             _context = context;
         }
 
-        public Group GetGroupByMemberId(string memberId)
+        public Group GetGroupByMemberId(string memberId,int? classId)
         {
             return _context.Groups
                 .Include(g => g.StudentGroups)
                     .ThenInclude(sg => sg.Student)
-                .FirstOrDefault(g => g.StudentGroups.Any(sg => sg.StudentId == memberId));
+                .FirstOrDefault(g => g.StudentGroups.Any(sg => sg.StudentId == memberId && g.ClassId == classId));
         }
     }
 }

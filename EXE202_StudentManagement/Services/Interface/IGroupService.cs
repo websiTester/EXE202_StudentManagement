@@ -5,6 +5,6 @@ namespace EXE202_StudentManagement.Services.Interface
 {
     public interface IGroupService
     {
-       Group GetGroupByMemberId(string memberId);
+       Group GetGroupByMemberId(string memberId,int? classId);
     }
 }

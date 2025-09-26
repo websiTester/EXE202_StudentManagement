@@ -39,7 +39,7 @@ namespace EXE202_StudentManagement.Controllers
             User user = await _userManager.GetUserAsync(User);
             ViewBag.CurrentUser = user;
 
-            var myGroup = _groupService.GetGroupByMemberId(user.Id);
+            var myGroup = _groupService.GetGroupByMemberId(user.Id, assignment.ClassId);
 
             if (assignment.IsGroupAssignment.GetValueOrDefault() && myGroup != null)
             {

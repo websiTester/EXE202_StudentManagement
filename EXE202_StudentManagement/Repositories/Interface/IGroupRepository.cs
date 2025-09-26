@@ -6,7 +6,7 @@ namespace EXE202_StudentManagement.Repositories.Interface
     public interface IGroupRepository
     {
 
-         Group GetGroupByMemberId(string memberId);
+         Group GetGroupByMemberId(string memberId,int? classId);
 
     }
 }
