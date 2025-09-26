@@ -498,12 +498,10 @@
                 .then(d => { if (d.success) location.reload(); });
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            if (@(Model.IsGroupAssignment?.ToString().ToLower() ?? "false")) {
-                renderKanban();
-                renderChart();
-            }
-        });
+        if (@(Model.IsGroupAssignment?.ToString().ToLower() ?? "false")) {
+            renderKanban();
+            renderChart();
+        }
 
 
         function handleRating(memberId, stars) {
