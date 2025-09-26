@@ -26,16 +26,7 @@ public class HomeController : Controller
             UserName = User.Identity?.Name
         };
 
-        // Lấy userId theo Identity (safe)
-        var userId = _userManager.GetUserId(User);
-
-        if (!string.IsNullOrEmpty(userId))
-        {
-            // gọi repository để xác định teacher/student theo DB class/studentclass
-            model.IsTeacher = await _classRepo.IsUserTeacherInAnyClassAsync(userId);
-            model.IsStudent = await _classRepo.IsUserStudentInAnyClassAsync(userId);
-        }
-
         return View(model);
     }
+
 }

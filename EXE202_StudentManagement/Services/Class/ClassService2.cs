@@ -2,16 +2,19 @@
 using EXE202_StudentManagement.Repositories.Interface;
 using EXE202_StudentManagement.Services.Interface;
 using EXE202_StudentManagement.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace EXE202_StudentManagement.Services.Class
 {
     public class ClassService2 : IClassService2
     {
         private readonly IClassRepository2 _repo;
+        private readonly UserManager<User> _userManager;
 
-        public ClassService2(IClassRepository2 repo)
+        public ClassService2(IClassRepository2 repo, UserManager<User> userManager)
         {
             _repo = repo;
+            _userManager = userManager;
         }
 
         public async Task<ClassDetailViewModel?> GetClassDetailViewModelAsync(int classId, string? currentUserId = null)
@@ -19,7 +22,13 @@ namespace EXE202_StudentManagement.Services.Class
             var classEntity = await _repo.GetClassDetailAsync(classId);
             if (classEntity == null) return null;
 
-            bool isTeacher = classEntity.TeacherId == currentUserId;
+            if (string.IsNullOrEmpty(currentUserId)) return null;
+
+            var user = await _userManager.FindByIdAsync(currentUserId);
+            if (user == null) return null;
+
+            bool isTeacher = await _userManager.IsInRoleAsync(user, "Teacher");
+            bool isStudent = await _userManager.IsInRoleAsync(user, "Student");
 
             if (isTeacher)
             {
@@ -87,7 +96,7 @@ namespace EXE202_StudentManagement.Services.Class
                 };
                 return vm;
             }
-            else
+            else if(isStudent)
             {
                 var vm = new ClassDetailStudentViewModel
                 {
@@ -144,6 +153,7 @@ namespace EXE202_StudentManagement.Services.Class
                 };
                 return vm;
             }
+            return null;
         }
 
 
