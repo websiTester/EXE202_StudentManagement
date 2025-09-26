@@ -27,8 +27,8 @@ namespace EXE202_StudentManagement.Services.Class
             var user = await _userManager.FindByIdAsync(currentUserId);
             if (user == null) return null;
 
-            bool isTeacher = await _userManager.IsInRoleAsync(user, "Teacher");
-            bool isStudent = await _userManager.IsInRoleAsync(user, "Student");
+            bool isTeacher = await _userManager.IsInRoleAsync(user, "teacher");
+            bool isStudent = await _userManager.IsInRoleAsync(user, "student");
 
             if (isTeacher)
             {
