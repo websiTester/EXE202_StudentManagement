@@ -38,6 +38,7 @@ public class ClassDetailController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddAssignment(Assignment assignment)
     {
+        assignment.IsGroupAssignment = true;
         if (ModelState.IsValid)
         {
             await _service.AddAssignmentAsync(assignment);
