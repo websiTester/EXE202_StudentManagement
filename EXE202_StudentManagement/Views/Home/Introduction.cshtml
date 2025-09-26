@@ -14,18 +14,15 @@
             <div class="mt-4">
                 @if (User.Identity?.IsAuthenticated ?? false)
                 {
-                    if (User.IsInRole("Teacher"))
+                    if (User.IsInRole("teacher"))
                     {
                         <a href="/teacher/class/home" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay (Giáo viên)</a>
                     }
-                    else if (User.IsInRole("Student"))
+                    else if (User.IsInRole("student"))
                     {
                         <a href="/class/index" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay (Học sinh)</a>
                     }
-                    else
-                    {
-                        <a href="/user/home" class="btn btn-light btn-lg rounded-pill me-2 shadow">Bắt đầu ngay</a>
-                    }
+                    
                 }
                 else
                 {
