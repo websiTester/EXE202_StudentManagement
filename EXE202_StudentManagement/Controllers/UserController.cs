@@ -98,17 +98,7 @@ namespace EXE202_StudentManagement.Controllers
         [Route("admin/dashboard")]
         public IActionResult AdminDashboard()
         {
-            try
-            {
-                // Gọi service đồng bộ
-                var statisticsViewModel = _statisticsService.GetDashboardStatistics();
-                return Ok(statisticsViewModel);
-            }
-            catch (Exception ex)
-            {
-                // Ghi lại lỗi (log the error)
-                return StatusCode(500, "Đã xảy ra lỗi máy chủ nội bộ.");
-            }
+            return View();
         }
     }
 }
