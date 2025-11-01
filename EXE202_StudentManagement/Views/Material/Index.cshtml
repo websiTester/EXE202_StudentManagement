@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài liệu học tập - Viroom.com</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(90deg, #c7d2fe, #a5b4fc, #818cf8);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .material-card {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .material-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white bg-opacity-80 shadow-sm sticky top-0 z-50 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-users-class text-indigo-500 mr-2"></i> Viroom
+            </h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-700 font-medium">Xin chào, Nguyễn Văn A</span>
+                <i class="fas fa-user-circle text-3xl text-gray-500"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-10">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-book-open text-indigo-500 mr-3"></i> Tài liệu học tập (Lớp Thiết kế Giao diện)
+            </h2>
+
+            <!-- Search, Filter, and Add Button -->
+            <div class="mb-6 flex space-x-4 items-center">
+                <input type="text" placeholder="Tìm kiếm tài liệu..." class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                <button class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" onclick="showAddMaterialModal()">
+                    <i class="fas fa-upload mr-1"></i> Thêm Tài liệu
+                </button>
+
+                <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition duration-200">
+                    <i class="fas fa-filter mr-1"></i> Lọc
+                </button>
+            </div>
+
+            <!-- Material List -->
+            <div id="materials-list" class="space-y-4">
+                <!-- Data will be rendered by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white bg-opacity-80 text-gray-800 py-6 mt-auto">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Viroom.com. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL POPUP: Thêm Tài liệu -->
+    <div id="add-material-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Thêm Tài liệu mới</h3>
+                <button onclick="closeAddMaterialModal()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="handleNewMaterial(event)">
+                <div class="mb-4">
+                    <label for="material-title" class="block text-gray-700 font-semibold mb-2">Tiêu đề Tài liệu</label>
+                    <input type="text" id="material-title" name="material-title" placeholder="Ví dụ: Slide Chương 3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="material-link" class="block text-gray-700 font-semibold mb-2">Link Tài liệu (PDF, DOCX, Video)</label>
+                    <input type="url" id="material-link" name="material-link" placeholder="Dán đường dẫn..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="assignment-id" class="block text-gray-700 font-semibold mb-2">Thuộc Bài tập ID (Demo)</label>
+                    <input type="text" id="assignment-id" name="assignment-id" value="101" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition duration-200">
+                    Lưu Tài liệu
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+        // DỮ LIỆU TĨNH (Mock Data)
+        let materialsData = [
+            { id: 1, title: "Slide Bài Giảng Chương 1: Giới thiệu chung", link: "https://example.com/slide_chuong1.pdf", uploaded: "25/10/2025", assignmentId: 101, type: "pdf" },
+            { id: 2, title: "Yêu cầu chi tiết đồ án cuối kỳ", link: "https://example.com/project_spec.docx", uploaded: "27/10/2025", assignmentId: 102, type: "docx" },
+            { id: 3, title: "Video hướng dẫn cài đặt môi trường Android Studio", link: "https://youtube.com/android_setup", uploaded: "28/10/2025", assignmentId: 101, type: "video" },
+            { id: 4, title: "Mẫu báo cáo tiến độ", link: "https://example.com/report_template.xlsx", uploaded: "29/10/2025", assignmentId: 103, type: "xlsx" },
+        ];
+
+        document.addEventListener('DOMContentLoaded', renderMaterials);
+
+        function getFileIcon(link) {
+            let type = 'file';
+            let color = 'text-gray-500';
+
+            const lowerLink = link.toLowerCase();
+
+            if (lowerLink.includes('.pdf')) { type = 'fas fa-file-pdf'; color = 'text-red-600'; }
+            else if (lowerLink.includes('.docx') || lowerLink.includes('.doc')) { type = 'fas fa-file-word'; color = 'text-blue-600'; }
+            else if (lowerLink.includes('.xlsx') || lowerLink.includes('.xls')) { type = 'fas fa-file-excel'; color = 'text-green-600'; }
+            else if (lowerLink.includes('youtube.com') || lowerLink.includes('youtu.be')) { type = 'fas fa-video'; color = 'text-red-700'; }
+
+            return { icon: type, color: color };
+        }
+
+        function renderMaterials() {
+            const container = document.getElementById('materials-list');
+            container.innerHTML = '';
+
+            if (materialsData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 mt-8 p-6 bg-gray-100 rounded-lg">
+                        <p class="text-lg font-medium">Hiện chưa có tài liệu nào được đăng tải.</p>
+                        <p class="text-sm">Hãy kiểm tra lại sau hoặc liên hệ giáo viên.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            materialsData.forEach(material => {
+                const iconInfo = getFileIcon(material.link);
+
+                const card = document.createElement('div');
+                card.className = 'material-card bg-gray-50 p-4 rounded-lg border border-gray-200 flex justify-between items-center';
+                card.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <i class="${iconInfo.icon} ${iconInfo.color} text-3xl"></i>
+                        <div>
+                            <p class="font-semibold text-gray-800">${material.title}</p>
+                            <p class="text-sm text-gray-500">Đăng tải: ${material.uploaded}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <p class="text-sm text-indigo-500 font-medium hidden sm:block">Thuộc bài tập ID: ${material.assignmentId}</p>
+                        <a href="${material.link}" target="_blank" rel="noopener noreferrer"
+                           class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-sm">
+                            <i class="fas fa-download mr-1"></i> Tải về
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --------------------------------------------------------
+        // LOGIC POPUP & THÊM DỮ LIỆU
+        // --------------------------------------------------------
+
+        function showAddMaterialModal() {
+            document.getElementById('add-material-modal').classList.remove('hidden');
+        }
+
+        function closeAddMaterialModal() {
+            document.getElementById('add-material-modal').classList.add('hidden');
+            // Xóa nội dung form sau khi đóng
+            document.getElementById('material-title').value = '';
+            document.getElementById('material-link').value = '';
+        }
+
+        function handleNewMaterial(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('material-title').value;
+            const link = document.getElementById('material-link').value;
+            const assignmentId = document.getElementById('assignment-id').value;
+
+            if (!title || !link) {
+                 alert("Vui lòng nhập đầy đủ Tiêu đề và Link.", "error");
+                 return;
+            }
+
+            const newId = materialsData.length + 1;
+            const now = new Date();
+            const uploadedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+
+            // Xử lý loại file dựa trên link để render icon
+            const linkType = getFileIcon(link).type;
+
+            materialsData.push({
+                id: newId,
+                title: title,
+                link: link,
+                uploaded: uploadedDate,
+                assignmentId: assignmentId || 'DEMO' + newId,
+                type: linkType.replace('fas fa-', '') // Lưu lại loại file cơ bản
+            });
+
+            // Cập nhật giao diện
+            renderMaterials();
+            closeAddMaterialModal();
+            alert("Đã thêm tài liệu mới vào danh sách demo!", "success");
+        }
+
+        // Hàm alert tùy chỉnh
+        function alert(message, type = "info") {
+            const alertBox = document.createElement('div');
+            let iconClass = '';
+            let colorClass = '';
+            if (type === "success") {
+                iconClass = 'fa-check-circle';
+                colorClass = 'text-green-500';
+            } else if (type === "error") {
+                iconClass = 'fa-exclamation-triangle';
+                colorClass = 'text-red-500';
+            } else {
+                iconClass = 'fa-info-circle';
+                colorClass = 'text-blue-500';
+            }
+
+            alertBox.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 text-center z-50 max-w-sm w-full';
+            alertBox.style.cssText = 'animation: fadeIn 0.3s ease-in-out;';
+
+            alertBox.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <div class="${colorClass} text-4xl mb-4">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+                    <button onclick="this.parentElement.remove()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">Đóng</button>
+                </div>
+            `;
+            document.body.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.style.cssText = 'animation: fadeOut 0.3s ease-in-out;';
+                setTimeout(() => alertBox.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
